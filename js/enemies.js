@@ -127,7 +127,9 @@ function pop(e){
   if(p.hearts<p.maxH&&++p.heal>=HEAL_POPS){p.heal=0;p.hearts++;word(p.x,p.y-p.r-30,'+1',COL.coral,24,50);sfx.heal();}
   hud();
 }
-/* A touch that is not a pop: you bounce, lose most of your speed, and the chain ends. */
+/* A touch that is not a pop: the body throws you back and the chain ends. It costs no heart.
+   One throw, then a short gap (SHOVE.gap ticks) where a touch only stops you, so being pinned still works as before. */
+const SHOVE={base:8,perRing:.8,rings:4,gap:40};
 function bumpInto(e,nx,ny,o){
   const p=P,vn=p.vx*nx+p.vy*ny,en=e.vx*nx+e.vy*ny;p.x+=nx*o;p.y+=ny*o;
   if(e.type==='p'&&e.mode===2){p.vx=nx*13;p.vy=ny*13;p.shoved=18;p.squish=Math.min(.9,p.squish+.2);endChain();
@@ -135,6 +137,9 @@ function bumpInto(e,nx,ny,o){
   if(e.type==='d'&&e.mode===2){p.vx+=e.dx*11;p.vy+=e.dy*11;p.shoved=18;p.squish=Math.min(.9,p.squish+.3);e.mode=3;e.mt=60;endChain();
     sfx.bonk();shake=Math.max(shake,14);return;}
   if(e.iv>0){if(vn<0){p.vx-=1.7*vn*nx;p.vy-=1.7*vn*ny;}return;}                   // just struck: solid for a moment, no penalty
+  if(e.type!=='z'&&p.shoveT<=0){                                                  // thrown back; bigger bodies throw harder; sleepers never do
+    const k=SHOVE.base+Math.min(e.n,SHOVE.rings)*SHOVE.perRing;p.vx=nx*k+e.vx;p.vy=ny*k+e.vy;p.shoved=18;p.shoveT=SHOVE.gap;p.bonkT=14;e.pulse=1;endChain();
+    shake=Math.max(shake,9);buzz(12);if(e.type==='h'&&p.top)sfx.clang();else sfx.bonk();puff(p.x-nx*p.r,p.y-ny*p.r,TY[e.type].col,8,5);return;}
   if(vn<0){p.vx-=1.55*vn*nx;p.vy-=1.55*vn*ny;p.vx*=.3;p.vy*=.3;}
   const v2=p.vx*nx+p.vy*ny;if(v2<en){p.vx+=(en-v2)*nx;p.vy+=(en-v2)*ny;}          // a body that keeps coming carries the comet with it
   if(vn<-3&&p.bonkT<=0){p.bonkT=14;shake=Math.max(shake,4);if(e.type==='h'&&p.top)sfx.clang();else sfx.bonk();
