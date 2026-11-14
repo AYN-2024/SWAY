@@ -92,7 +92,7 @@ function drawEnemy(e){
   c.save();c.translate(e.x+(e.type==='d'&&e.mode===1?(Math.random()-.5)*4:0),e.y);c.scale(sc*wob,sc/wob);
   c.strokeStyle=COL.line;c.lineWidth=3;let br=r;
   if(e.type==='p'){const big=e.mode===2,tip=big?r:r*1.12;br=big?r*.7:r*.94;                        // puffer: nubs, or real spikes
-    c.fillStyle=e.mode===1&&gt&4?COL.paper:T.col;c.beginPath();
+    c.fillStyle=big||e.mode===1&&gt&4?COL.paper:T.col;c.beginPath();                              // spikes out: white, steady, like teeth. The flicker before them is the warning
     for(let i=0;i<24;i++){const a=i*TAU/24+e.ph,q=i&1?br*.96:tip;c.lineTo(Math.cos(a)*q,Math.sin(a)*q);}
     c.closePath();c.fill();c.stroke();}
   c.fillStyle=T.col;c.beginPath();
