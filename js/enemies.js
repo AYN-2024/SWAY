@@ -137,11 +137,11 @@ function pop(e){
 /* A touch that is not a pop: the body throws you back and the chain ends. It costs no heart.
    One throw, then a short gap (SHOVE.gap ticks) where a touch only stops you, so being pinned still works as before. */
 const SHOVE={base:8,perRing:.8,rings:4,gap:40};
-const SPIKE={push:1.5,dark:60};   // a spike hit: push = the little speed you keep, dark = ticks with no glow
+const SPIKE={push:1.5,dark:60};   // a spike hit costs a heart. push = the little speed you keep, dark = ticks with no glow
 function bumpInto(e,nx,ny,o){
   const p=P,vn=p.vx*nx+p.vy*ny,en=e.vx*nx+e.vy*ny;p.x+=nx*o;p.y+=ny*o;
   if(e.type==='p'&&e.mode===2&&p.shoveT<=0){p.vx=nx*SPIKE.push;p.vy=ny*SPIKE.push;p.shoved=SPIKE.dark;p.shoveT=SHOVE.gap;p.squish=Math.min(.9,p.squish+.2);endChain();   // spikes: stopped dead, and no glow for a second
-    sfx.spike();shake=Math.max(shake,14);buzz(20);puff(p.x,p.y,TY.p.col,14,6);return;}
+    sfx.spike();shake=Math.max(shake,14);buzz(20);puff(p.x,p.y,TY.p.col,14,6);if(p.inv<=0)hurt('spike');return;}   // and a heart, unless you are still blinking
   if(e.type==='d'&&e.mode===2){p.vx+=e.dx*11;p.vy+=e.dy*11;p.shoved=18;p.squish=Math.min(.9,p.squish+.3);e.mode=3;e.mt=60;endChain();
     sfx.bonk();shake=Math.max(shake,14);return;}
   if(e.iv>0){if(vn<0){p.vx-=1.7*vn*nx;p.vy-=1.7*vn*ny;}return;}                   // just struck: solid for a moment, no penalty

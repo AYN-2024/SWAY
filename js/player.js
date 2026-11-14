@@ -1,5 +1,5 @@
 /* player: the comet. Drag pulls it, letting go lets it coast, glowing pops things,
-   and being pinned is the only thing that ever hurts. */
+   and two things cost a heart: being pinned, and touching spikes. */
 function newPlayer(x,y){
   return{x,y,vx:0,vy:0,r:MOVE.r,tr:[],top:false,over:0,hearts:3,squish:0,pnx:0,pny:-1,inv:0,dust:0,ready:false,
     chain:0,rest:0,shoved:0,heal:0,bonkT:0,tE:0,tS:0,sqMax:0,dead:false,moved:0,maxH:3,reach:120,shoveT:0,
@@ -69,8 +69,8 @@ function squeezeTick(){
   if(p.squish>=1)hurt();
   else if(p.squish===0&&p.sqMax>0){if(p.sqMax>.6){word(p.x,p.y-p.r-22,'Close!',COL.paper,20,46);sfx.heal();}p.sqMax=0;}   // slipped out of a squeeze
 }
-function hurt(){
-  const p=P;p.hearts--;p.squish=p.sqMax=0;p.inv=110;p.heal=0;R.hurt=true;endChain();
+function hurt(by){
+  const p=P;p.by=by||'squeeze';p.hearts--;p.squish=p.sqMax=0;p.inv=110;p.heal=0;R.hurt=true;endChain();
   shake=24;freeze=8;flash=1;buzz(40);sfx.hurt();ringFx(p.x,p.y,COL.coral,10,240,30,7);puff(p.x,p.y,COL.teal,24,7);
   for(const e of E){const dx=e.x-p.x,dy=e.y-p.y,d=hyp(dx,dy)||1;
     if(d<e.r+p.r+8)e.crown=tick;                         // the ones that did it get a crown if this was the last heart

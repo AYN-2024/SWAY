@@ -7,7 +7,8 @@ function show(id){
   $('ov').hidden=!id;mapOn=id==='title';$('ov').classList.toggle('clear',mapOn);$('ov').classList.toggle('soft',id==='end');$('hud').hidden=state==='title'||state==='end';
   if(id==='title'){const d=doneCount(),b=save.endless.best;$('play').textContent=!d?'Play':d>=ROOMS.length?'Play again':'Play room '+(d+1);
     $('endlessBtn').hidden=!endlessOpen();$('endlessBtn').textContent=b?'Endless  ·  best '+b:'Endless';}
-  if(id==='dead'){const e=mode==='endless',n=$('deadStats');n.hidden=!e;
+  if(id==='dead'){const e=mode==='endless',n=$('deadStats'),sp=P&&P.by==='spike';n.hidden=!e;
+    $('deadTitle').textContent=sp?'Spiked':'Squished';$('deadTag').textContent=sp?'Leave it alone while it is spiky.':'If you stop, you die.';
     if(e)n.textContent='You rang '+EW+(EW===1?' wall. ':' walls. ')+(EW>EB0?'New best.':'Best '+save.endless.best+'.');}
 }
 function hud(){
