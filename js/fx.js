@@ -17,7 +17,7 @@ function fxTick(){
     if(++p.t>=p.m){PT[i]=PT[PT.length-1];PT.pop();continue;}
     const d=p.k===1?.975:.93;p.x+=p.vx;p.y+=p.vy;p.vx*=d;p.vy*=d;if(p.k===1)p.a+=.18;}
   for(let i=FL.length-1;i>=0;i--){const f=FL[i];f.y-=.55;if(++f.t>=f.m)FL.splice(i,1);}
-  const p=P,all=R.cleared,reach=p.dead?0:all?1e5:p.superT>0?280:120;       // dust leans toward the comet; a cleared room hands it all over
+  const p=P,all=R.cleared,reach=p.dead?0:all?1e5:p.superT>0?Math.max(280,p.reach):p.reach;       // dust leans toward the comet; a cleared room hands it all over
   for(let i=DU.length-1;i>=0;i--){const d=DU[i],dx=p.x-d.x,dy=p.y-d.y,q=hyp(dx,dy)||1;d.t++;
     if(d.t>8&&q<reach){const pull=all?2.2:.7+(1-q/reach)*1.6;d.vx+=dx/q*pull;d.vy+=dy/q*pull;}
     d.vx*=.9;d.vy*=.9;d.x+=d.vx;d.y+=d.vy;

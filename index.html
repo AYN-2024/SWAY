@@ -92,6 +92,7 @@ p{margin:0;line-height:1.45}
     <div id="slot"></div>
     <p class="tag">Pop them all. Gong the wall.</p>
     <button id="play" class="btn">Play</button>
+    <button id="endlessBtn" class="btn gold" hidden>Endless</button>
     <button id="roomsBtn" class="btn quiet">Rooms</button>
     <p class="note">Drag to fly. Let go to brake. When you turn green, double-tap.</p>
   </section>
@@ -100,6 +101,7 @@ p{margin:0;line-height:1.45}
     <h1>Ten rooms</h1>
     <p class="note">One star for getting out. One for no lost hearts. One for a long chain.</p>
     <div id="grid"></div>
+    <p id="perkNote" class="note"></p>
     <button id="back" class="btn quiet">Back</button>
   </section>
 
@@ -114,6 +116,7 @@ p{margin:0;line-height:1.45}
   <section id="dead" class="scr" hidden>
     <h1>Squished</h1>
     <p class="tag">If you stop, you die.</p>
+    <p id="deadStats" class="note" hidden></p>
     <div class="gap"></div>
     <button id="retry" class="btn">Try again</button>
     <button id="deadRooms" class="btn quiet">Rooms</button>
@@ -124,7 +127,8 @@ p{margin:0;line-height:1.45}
     <p class="tag">You rang all ten.</p>
     <p id="endStats" class="note"></p>
     <div class="gap"></div>
-    <button id="again" class="btn gold">Play again</button>
+    <button id="endEndless" class="btn gold">Endless</button>
+    <button id="again" class="btn quiet">Play again</button>
     <button id="endRooms" class="btn quiet">Rooms</button>
   </section>
 </div>

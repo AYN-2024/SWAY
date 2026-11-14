@@ -124,7 +124,7 @@ function pop(e){
     for(const s of[-1,1]){const c=mkEnemy('b',e.x+sx*s*e.r*.5,e.y+sy*s*e.r*.5,Math.max(1,e.n-1));
       c.st=1;c.vx=sx*s*7;c.vy=sy*s*7;c.stun=26;c.iv=10;E.push(c);}}
   if(e.type==='G'){slow=.3;slowT=60;shake=30;dustAt(e.x,e.y,40);puff(e.x,e.y,COL.paper,40,10);}
-  if(p.hearts<3&&++p.heal>=HEAL_POPS){p.heal=0;p.hearts++;word(p.x,p.y-p.r-30,'+1',COL.coral,24,50);sfx.heal();}
+  if(p.hearts<p.maxH&&++p.heal>=HEAL_POPS){p.heal=0;p.hearts++;word(p.x,p.y-p.r-30,'+1',COL.coral,24,50);sfx.heal();}
   hud();
 }
 /* A touch that is not a pop: you bounce, lose most of your speed, and the chain ends. */

@@ -18,17 +18,45 @@ const ROOMS=[
     waves:[[0,'b2 b1 b1 s2'],[5,'d1 b2 b2 h1'],[5,'s2 b1 p1 b2'],[5,'b3 d1 s2 b1'],[5,'h2 b2 d1']]},
   {name:'The giant',zoom:.72,grow:5,max:10,sp:1.3,waves:[[0,'G7@.5,.28'],[8,'d1 h1 b2'],[10,'p1 d1 b2'],[10,'h2 d1 s2'],[10,'d1 d1 b3']]},
 ];
+/* Endless: opens once all ten are rung. The same rule, crowds made on the spot, and one set of hearts for the whole run.
+   The score is walls rung. Everything that sets how hard wall n is sits in ENDLESS: edit it to rebalance. */
+let mode='rooms',EW=0,EB0=0;                  // which game is on, walls rung this run, the best before this run began
+const ENDLESS={zoom:.78,                      // one size, every wall
+  waves:n=>Math.min(6,3+((n-1)/3|0)),        // 3 waves, one more every 3 walls, 6 at most
+  bodies:n=>Math.min(6,3+((n-1)/4|0)),       // 3 bodies a wave, one more every 4 walls, 6 at most
+  grow:n=>Math.max(3.5,6-.2*(n-1)),          // seconds between rings
+  sp:n=>Math.min(1.6,1+.05*(n-1)),           // walking speed
+  gap:n=>Math.max(4,7-.25*(n-1)),            // seconds between waves
+  first:[['b',1],['s',2],['d',3],['B',4],['p',5],['h',6]]};   // the wall each kind first shows up on, in the order the rooms taught them
+function endlessDef(n){
+  const K=ENDLESS,giant=n%10===0,twist=n%5===0&&!giant?(n/5>>1&1?'walls':'stones'):'';   // every 5th wall has a twist, every 10th is the giant
+  const pool=K.first.filter(t=>t[1]<=n).map(t=>t[0]),big=1+Math.min(2,(n-1)/4|0),waves=[];
+  for(let w=0;w<K.waves(n);w++){const out=[],seen={};
+    for(let k=0;k<K.bodies(n);k++){
+      let t=k<2||rnd()<.35?'b':pool[1+(rnd()*(pool.length-1)|0)]||'b';
+      if(t!=='b'&&seen[t]>=(t==='d'?2:1))t='b';seen[t]=(seen[t]||0)+1;                   // one of each odd kind a wave, two dashers at most
+      const r=t==='b'?1+(rnd()*big|0):t==='s'?2+(rnd()*Math.min(2,big)|0):t==='B'?2:t==='d'?1:1+(rnd()*Math.min(2,big)|0);
+      out.push(t+r);}
+    waves.push([w?K.gap(n):0,out.join(' ')]);}
+  if(giant)waves[0]=[0,'G7@.5,.28'];
+  const def={name:giant?'The giant':twist==='walls'?'The walls':twist==='stones'?'Stones':'',zoom:K.zoom,grow:K.grow(n),max:10,sp:K.sp(n),waves};
+  if(twist==='stones')def.stones=[[.3,.3],[.7,.3],[.5,.5],[.3,.7],[.7,.7]];
+  if(twist==='walls')def.shrink=[.25,58];
+  return def;
+}
 const tokens=s=>s.split(' ').map(t=>{const m=/^(\w)(\d)(?:@([\d.]+),([\d.]+))?$/.exec(t);return{type:m[1],n:+m[2],fx:m[3]?+m[3]:-1,fy:m[4]?+m[4]:0};});
 const bodies=def=>def.waves.reduce((a,w)=>a+tokens(w[1]).reduce((b,t)=>b+(t.type==='s'?3:1),0),0);
 
 /* carry = arriving through a broken wall: the comet keeps its speed and the old room stays behind as a ghost. */
 function startRoom(i,carry){
-  const def=ROOMS[i],s=roomSize(def.zoom),ox=carry?(s.w-W)/2:0,oy=carry?(s.h-H)/2:0,prev=P;
+  const def=mode==='endless'?endlessDef(EW+1):ROOMS[i],s=roomSize(def.zoom),ox=carry?(s.w-W)/2:0,oy=carry?(s.h-H)/2:0,prev=P;
   const ghost=carry?{x:ox,y:oy,w:W,h:H}:null,c0=carry?cam:s.c,res=carry?R.res:null;
   W=s.w;H=s.h;BL=BT=0;BR=W;BB=H;E.length=IN.length=ST.length=0;
   if(carry)for(const q of PT.concat(DU,FL)){q.x+=ox;q.y+=oy;}else PT.length=DU.length=FL.length=0;
   P=newPlayer(W/2,H*.72);
-  if(carry){P.x=prev.x+ox;P.y=prev.y+oy;P.vx=prev.vx;P.vy=prev.vy;P.over=30;P.tr=prev.tr.map((v,k)=>v+(k&1?oy:ox));}
+  if(carry){P.x=prev.x+ox;P.y=prev.y+oy;P.vx=prev.vx;P.vy=prev.vy;P.over=30;P.tr=prev.tr.map((v,k)=>v+(k&1?oy:ox));
+    if(mode==='endless')for(const k of['hearts','maxH','reach','dust','ready','chain','heal','inv','superT'])P[k]=prev[k];}   // Endless: nothing refills at the wall
+  else if(mode==='endless'){const k=perks();if(k.heart)P.hearts=P.maxH=4;if(k.sup){P.dust=SUPER_COST;P.ready=true;}if(k.dust)P.reach=240;}   // what the stars bought
   const hue=232+i*7;                                                    // each room drifts a little further from navy
   R={i,def,t:0,wi:0,wt:0,total:bodies(def),popped:0,best:0,hurt:false,cleared:false,duds:0,deadT:0,fin:0,intro:carry?120:36,c0,c1:s.c,ghost,res,
     ink:'hsl('+hue+',33%,13.5%)',grid:'hsl('+hue+',38%,21%)',wall:'hsl('+hue+',32%,41%)'};
@@ -71,16 +99,18 @@ function launch(str){
 
 /* The wall is the gong. */
 function gongNow(nx,ny){
-  const r=R,p=P,s=1|(r.hurt?0:2)|(r.best>=Math.ceil(r.popped*.75)?4:0),sv=save.rooms[r.i]||{s:0,t:0};
-  sv.s|=s;sv.t=sv.t?Math.min(sv.t,r.t):r.t;save.rooms[r.i]=sv;save.hints.gong=1;store();
-  r.res={i:r.i,s,t:r.t,best:r.best,total:r.popped};
-  freeze=12;shake=32;flash=.9;slow=.3;slowT=46;buzz(70);sfx.gong(r.i);hint.t=0;
+  const r=R,p=P;
+  if(mode==='endless'){EW++;if(EW>save.endless.best)save.endless.best=EW;save.hints.gong=1;store();r.res={e:1,n:EW,s:0};}   // Endless: one more wall, nothing else to score
+  else{const s=1|(r.hurt?0:2)|(r.best>=Math.ceil(r.popped*.75)?4:0),sv=save.rooms[r.i]||{s:0,t:0};
+    sv.s|=s;sv.t=sv.t?Math.min(sv.t,r.t):r.t;save.rooms[r.i]=sv;save.hints.gong=1;store();
+    r.res={i:r.i,s,t:r.t,best:r.best,total:r.popped};}
+  freeze=12;shake=32;flash=.9;slow=.3;slowT=46;buzz(70);sfx.gong(Math.min(r.i,15));hint.t=0;
   ringFx(p.x,p.y,COL.amber,12,Math.max(W,H)*1.1,70,12);ringFx(p.x,p.y,COL.paper,12,Math.max(W,H)*.6,40,6);
   const hit=nx>0?0:nx<0?1:ny>0?2:3;
   for(let k=0;k<46;k++){const u=rnd(),side=k<22?hit:rnd()*4|0;                  // the struck wall goes first
     const x=side===0?0:side===1?W:u*W,y=side===2?0:side===3?H:u*H,ax=side===0?-1:side===1?1:0,ay=side===2?-1:side===3?1:0;
     shard(x,y,ax*rr(2,9)+rr(-2,2),ay*rr(2,9)+rr(-2,2),COL.amber);}
-  if(r.i+1<ROOMS.length)startRoom(r.i+1,true);
+  if(mode==='endless'||r.i+1<ROOMS.length)startRoom(r.i+1,true);
   else{                                                                         // the last wall: nothing left to hold it
     r.fin=1;r.cleared=false;BL=BT=-1e7;BR=BB=1e7;IN.length=0;p.over=0;$('hud').hidden=true;
     const v=hyp(p.vx,p.vy)||1,dx=p.vx/v,dy=p.vy/v;p.vx=dx*MOVE.cap;p.vy=dy*MOVE.cap;r.sky=[];

@@ -2,7 +2,7 @@
    and being pinned is the only thing that ever hurts. */
 function newPlayer(x,y){
   return{x,y,vx:0,vy:0,r:MOVE.r,tr:[],top:false,over:0,hearts:3,squish:0,pnx:0,pny:-1,inv:0,superT:0,dust:0,ready:false,
-    chain:0,rest:0,shoved:0,heal:0,bonkT:0,tE:0,tS:0,sqMax:0,dead:false,moved:0};
+    chain:0,rest:0,shoved:0,heal:0,bonkT:0,tE:0,tS:0,sqMax:0,dead:false,moved:0,maxH:3,reach:120};
 }
 /* On touch the aim sits above the thumb, never under it. */
 function aimPoint(){const lift=inp.touch?Math.min(92,VH*.13):0;return{x:(inp.sx-OX)/cam,y:(inp.sy-lift-OY)/cam};}

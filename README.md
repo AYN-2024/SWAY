@@ -17,8 +17,16 @@ If you stop, you die.
 - Dust fills the ring around you. When you turn green, double-tap for Super.
 - Three stars per room: get out, lose no heart, keep a chain of 75% of the room.
 
+## Endless
+
+Ring all ten rooms and Endless opens. Same rule, crowds made on the spot, harder every wall.
+Hearts, dust and your chain carry through each wall. The score is walls rung in one run.
+
+Stars buy perks that only work in Endless: 10 stars start you with Super ready, 20 give a fourth heart,
+30 bring dust from twice as far.
+
 Keyboard: arrows or WASD to fly, Space for Super, P to pause, R to restart the room.
-Add `?all` to the address to open every room.
+Add `?all` to the address to open every room and Endless.
 
 ## Files
 
@@ -28,7 +36,7 @@ Add `?all` to the address to open every room.
 - `js/fx.js`: particles and dust
 - `js/player.js`: the comet
 - `js/enemies.js`: enemy types and rules
-- `js/rooms.js`: the ten rooms (edit `ROOMS` to rebalance)
+- `js/rooms.js`: the ten rooms (edit `ROOMS` to rebalance) and Endless (edit `ENDLESS`)
 - `js/render.js`: drawing
 - `js/ui.js`: screens, input, the loop
 

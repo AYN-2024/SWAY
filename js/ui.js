@@ -5,20 +5,28 @@ let last=0,acc=0,sacc=0,mapOn=false;
 function show(id){
   for(const s of document.querySelectorAll('.scr'))s.hidden=s.id!==id;
   $('ov').hidden=!id;mapOn=id==='title';$('ov').classList.toggle('clear',mapOn);$('ov').classList.toggle('soft',id==='end');$('hud').hidden=state==='title'||state==='end';
-  if(id==='title'){const d=doneCount();$('play').textContent=!d?'Play':d>=ROOMS.length?'Play again':'Play room '+(d+1);}
+  if(id==='title'){const d=doneCount(),b=save.endless.best;$('play').textContent=!d?'Play':d>=ROOMS.length?'Play again':'Play room '+(d+1);
+    $('endlessBtn').hidden=!endlessOpen();$('endlessBtn').textContent=b?'Endless  ·  best '+b:'Endless';}
+  if(id==='dead'){const e=mode==='endless',n=$('deadStats');n.hidden=!e;
+    if(e)n.textContent='You rang '+EW+(EW===1?' wall. ':' walls. ')+(EW>EB0?'New best.':'Best '+save.endless.best+'.');}
 }
 function hud(){
-  if(!R||!P)return;const hs=$('hearts').children;for(let i=0;i<3;i++)hs[i].classList.toggle('lost',i>=P.hearts);
+  if(!R||!P)return;const hb=$('hearts'),hs=hb.children;while(hs.length<P.maxH)hb.appendChild(hs[0].cloneNode(true));   // a fourth heart, if the stars bought one
+  for(let i=0;i<hs.length;i++){hs[i].style.display=i<P.maxH?'':'none';hs[i].classList.toggle('lost',i>=P.hearts);}
   $('count').textContent=Math.max(0,R.total-R.popped);$('left').classList.toggle('done',R.cleared);
-  $('roomno').textContent=(R.i+1)+'/'+ROOMS.length;
+  $('roomno').textContent=mode==='endless'?'Walls '+EW:(R.i+1)+'/'+ROOMS.length;
 }
-function begin(i){
+const endlessOpen=()=>doneCount()>=ROOMS.length||/[?&]all\b/.test(location.search);
+function beginEndless(){mode='endless';EW=0;EB0=save.endless.best;start(ROOMS.length);}
+function begin(i){mode='rooms';start(i);}
+const replay=()=>mode==='endless'?beginEndless():begin(R.i);
+function start(i){
   audioOn();seed=(Date.now()^i*7919)|0;state='play';slow=1;slowT=freeze=shake=flash=acc=sacc=0;inp.down=inp.sup=false;inp.keys.clear();
   startRoom(i,false);show('');
 }
 function pause(){
   if(state!=='play'||R.fin)return;state='pause';inp.down=false;inp.keys.clear();
-  $('mute').textContent=save.mute?'Sound off':'Sound on';show('pause');
+  $('mute').textContent=save.mute?'Sound off':'Sound on';$('restart').textContent=mode==='endless'?'Restart run':'Restart room';show('pause');
 }
 function resume(){if(state!=='pause')return;state='play';show('');}
 function openRooms(){
@@ -29,10 +37,12 @@ function openRooms(){
     b.innerHTML='<b>'+(i+1)+'</b><span>'+[1,2,4].map(m=>'<i'+(s&m?' class="on"':'')+'></i>').join('')+'</span>';
     b.onclick=()=>begin(i);g.appendChild(b);
   });
+  const st=stars(),nx=PERKS.find(p=>st<p[0]);                              // what the next stars buy
+  $('perkNote').textContent=st+' of 30 stars. '+(nx?(nx[0]-st)+' more: '+nx[1]+'.':'All three Endless perks are on.');
   state='title';show('rooms');
 }
 function showEnd(){
-  let st=0,t=0;for(const r of save.rooms)if(r){st+=(r.s&1)+(r.s>>1&1)+(r.s>>2&1);t+=r.t;}
+  let st=stars(),t=0;for(let i=0;i<ROOMS.length;i++)if(save.rooms[i])t+=save.rooms[i].t;
   $('endStats').textContent=st+' of 30 stars. Your best times add up to '+clock(t)+'.';state='end';show('end');
 }
 
@@ -77,7 +87,7 @@ addEventListener('pointerup',lift);addEventListener('pointercancel',lift);
 addEventListener('keydown',e=>{
   if(e.code==='Space'){if(state==='play'){inp.sup=true;e.preventDefault();}return;}
   if(e.code==='Escape'||e.code==='KeyP'){if(state==='play')pause();else resume();return;}
-  if(R&&(e.code==='KeyR'&&(state==='play'||state==='dead')||e.code==='Enter'&&state==='dead')){begin(R.i);return;}
+  if(R&&(e.code==='KeyR'&&(state==='play'||state==='dead')||e.code==='Enter'&&state==='dead')){replay();return;}
   if(state==='play')inp.keys.add(e.code);
 });
 addEventListener('keyup',e=>inp.keys.delete(e.code));
@@ -98,7 +108,8 @@ $('play').onclick=()=>{const d=doneCount();begin(d>=ROOMS.length?0:d);};
 $('roomsBtn').onclick=$('quit').onclick=$('deadRooms').onclick=$('endRooms').onclick=openRooms;
 $('back').onclick=()=>{state='title';show('title');};
 $('pauseBtn').onclick=pause;$('resume').onclick=resume;
-$('restart').onclick=$('retry').onclick=()=>begin(R.i);
+$('restart').onclick=$('retry').onclick=replay;
+$('endlessBtn').onclick=$('endEndless').onclick=beginEndless;
 $('again').onclick=()=>begin(0);
 $('mute').onclick=()=>{setMute(!save.mute);$('mute').textContent=save.mute?'Sound off':'Sound on';};
 

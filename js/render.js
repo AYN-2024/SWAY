@@ -182,12 +182,15 @@ function drawOver(){
       x=lerp(OX+p.x*cam,cx,q),y=lerp(OY+p.y*cam+70,OY+H*.3*cam+120,q);
     c.globalAlpha=.16*a;c.fillStyle=COL.paper;c.beginPath();c.arc(x,y,26,0,TAU);c.fill();c.globalAlpha=.6*a;c.strokeStyle=COL.paper;c.lineWidth=3;c.stroke();c.globalAlpha=1;}
   if(hint.t>0&&hint.s)label(hint.s,cx,fr.y+fr.h*.86,24,COL.paper,Math.min(1,hint.t/20));
-  if(r.res&&r.intro>0){const n=120-r.intro,a=Math.min(1,n/10,r.intro/14),y=fr.y+fr.h*.28,q=r.res;                       // the room you just rang
+  if(r.res&&r.res.e&&r.intro>0){const n=120-r.intro,a=Math.min(1,n/10,r.intro/14),y=fr.y+fr.h*.26;                     // Endless: how many walls so far
+    label(''+r.res.n,cx,y,84,COL.amber,a,900);label(r.res.n===1?'wall rung':'walls rung',cx,y+62,18,COL.paper,a);
+    if(r.res.n>EB0&&EB0>0)label('New best',cx,y+90,15,COL.muted,a,700);}
+  else if(r.res&&r.intro>0){const n=120-r.intro,a=Math.min(1,n/10,r.intro/14),y=fr.y+fr.h*.28,q=r.res;                  // the room you just rang
     nest(cx,y,96,q.i+1,q.i+1,a);c.globalAlpha=a;
     const cap=['out','no hit','chain '+Math.ceil(q.total*.75)+'+'];
     for(let b=0;b<3;b++){const on=q.s>>b&1,tt=n-(24+b*16),x=cx+(b-1)*62;if(tt<0)continue;
       c.globalAlpha=a;star(x,y+94,(on?20:15)*(tt<8?1.5-tt/16:1),on);label(cap[b],x,y+124,12,on?COL.paper:COL.muted,a,700);}
     label('Room '+(q.i+1)+' done',cx,y+158,18,COL.paper,a);label(clock(q.t)+'   best chain '+q.best,cx,y+183,14,COL.muted,a,700);}
   else if(r.intro>0||r.t<90){const a=r.intro>0?1:1-r.t/90;
-    label('Room '+(r.i+1),cx,fr.y+fr.h*.09,15,COL.muted,a,700);label(r.def.name,cx,fr.y+fr.h*.09+30,34,COL.paper,a,900);}
+    label(mode==='endless'?'Wall '+(EW+1):'Room '+(r.i+1),cx,fr.y+fr.h*.09,15,COL.muted,a,700);label(r.def.name,cx,fr.y+fr.h*.09+30,34,COL.paper,a,900);}
 }
