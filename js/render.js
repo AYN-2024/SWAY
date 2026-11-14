@@ -138,7 +138,7 @@ function crown(r){                                                      // whoev
 }
 
 /* The squeeze picture. Edit to taste: grow = how much bigger at a full meter, throb = the pulse, drop = how far the shadow falls, shade = how dark it is.
-   Only the body swells. The white ring and the dust ring stay on the floor, inside the frame. */
+   Only the body swells. The dust ring stays on the floor, inside the frame. */
 const BULGE={grow:.5,throb:.12,drop:16,shade:.6};
 function drawComet(){
   const c=ctx,p=P,v=hyp(p.vx,p.vy),sup=p.superT>0,n=p.tr.length>>1,al=p.inv>0&&tick&4?.45:1,r=p.r,fk=R.fin?R.c1/cam:1;   // fk: the comet keeps its size on screen while the camera pulls away
@@ -151,16 +151,17 @@ function drawComet(){
   const q=p.squish>.02?p.squish:0;                                       // squeezed: no bending. It swells, throbs and lifts off the floor.
   c.save();c.translate(p.x,p.y);c.scale(fk,fk);
   const b=q?1+BULGE.grow*q+(calm?0:BULGE.throb*q*Math.sin(gt*(.25+.55*q))):1;
-  if(!q&&v>1){const a=Math.atan2(p.vy,p.vx),s=1+Math.min(v/MOVE.cap,1.2)*.1;c.rotate(a);c.scale(s,1/s);c.rotate(-a);}
   const hot=sup?COL.green:p.top?'hsl('+(gt*9%360)+',95%,66%)':COL.paper;
+  c.save();c.scale(1/fk,1/fk);c.translate(-p.x,-p.y);box(0,BL,BT,BR-BL,BB-BT);c.clip();c.translate(p.x,p.y);c.scale(fk,fk);   // the glow and the dust ring never cross a wall
   if(p.top){c.globalAlpha=al*.25;c.fillStyle=hot;c.beginPath();c.arc(0,0,r+11+Math.sin(gt*.4)*2,0,TAU);c.fill();}
-  const last=p.hearts===1&&!sup,beat=calm?.5:.5+.5*Math.sin(gt*.1);                                 // the last heart: the ring turns coral and beats
-  c.globalAlpha=last?al*(.6+.4*beat):al;c.strokeStyle=last?COL.coral:hot;c.lineWidth=last?3.5+beat:3.5;c.beginPath();c.arc(0,0,r+5,0,TAU);c.stroke();c.globalAlpha=al;
-  if(R.i>0&&p.dust>0&&!sup){c.strokeStyle=p.ready?COL.green:COL.amber;c.lineWidth=p.ready?5+Math.sin(gt*.3)*1.5:4;      // dust fills a ring around you
-    c.beginPath();c.arc(0,0,r+11,-Math.PI/2,-Math.PI/2+TAU*p.dust/SUPER_COST);c.stroke();}
+  c.globalAlpha=al;
+  if(R.i>0&&p.dust>0&&!sup){c.strokeStyle=p.ready?COL.green:COL.amber;c.lineWidth=p.ready?5+Math.sin(gt*.3)*1.5:4;      // the only ring: dust, filling toward Super
+    c.beginPath();c.arc(0,0,r+7,-Math.PI/2,-Math.PI/2+TAU*p.dust/SUPER_COST);c.stroke();}
+  c.restore();c.globalAlpha=al;
+  const last=p.hearts===1&&!sup,beat=calm?.5:.5+.5*Math.sin(gt*.1);                                 // the last heart: the body's outline turns coral and beats
   if(q){c.globalAlpha=BULGE.shade*q;c.fillStyle='#000';c.beginPath();c.arc(0,BULGE.drop*q,(r+2)*b,0,TAU);c.fill();c.globalAlpha=al;   // its shadow falls further below as it rises
     c.scale(b,b);}
-  c.fillStyle=p.ready||sup?COL.green:COL.teal;c.strokeStyle=COL.line;c.lineWidth=3;c.beginPath();c.arc(0,0,r,0,TAU);c.fill();c.stroke();
+  c.fillStyle=p.ready||sup?COL.green:COL.teal;c.strokeStyle=last?COL.coral:COL.line;c.lineWidth=last?3.5+1.5*beat:3;c.beginPath();c.arc(0,0,r,0,TAU);c.fill();c.stroke();c.strokeStyle=COL.line;
   if(q){let g=c.createRadialGradient(0,0,r*.45,0,0,r);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,'+(.5*q)+')');   // the rim falls away
     c.fillStyle=g;c.beginPath();c.arc(0,0,r-1.5,0,TAU);c.fill();
     g=c.createRadialGradient(-r*.3,-r*.38,0,-r*.3,-r*.38,r*(.35+.5*q));g.addColorStop(0,'rgba(255,255,255,'+(.75*q)+')');g.addColorStop(1,'rgba(255,255,255,0)');   // the shine of a dome
@@ -204,7 +205,7 @@ function drawOver(){
     const cap=['out','no hit','chain '+Math.ceil(q.total*.75)+'+'];
     for(let b=0;b<3;b++){const on=q.s>>b&1,tt=n-(24+b*16),x=cx+(b-1)*62;if(tt<0)continue;
       c.globalAlpha=a;star(x,y+94,(on?20:15)*(tt<8?1.5-tt/16:1),on);label(cap[b],x,y+124,12,on?COL.paper:COL.muted,a,700);}
-    label('Room '+(q.i+1)+' done',cx,y+158,18,COL.paper,a);label(clock(q.t)+'   best chain '+q.best,cx,y+183,14,COL.muted,a,700);}
+    label('Room '+(q.i+1)+' done',cx,y+158,18,COL.paper,a);label('best chain '+q.best,cx,y+183,14,COL.muted,a,700);}
   else if(r.intro>0||r.t<90){const a=r.intro>0?1:1-r.t/90;
     label(mode==='endless'?'Wall '+(EW+1):'Room '+(r.i+1),cx,fr.y+fr.h*.09,15,COL.muted,a,700);label(r.def.name,cx,fr.y+fr.h*.09+30,34,COL.paper,a,900);}
 }
