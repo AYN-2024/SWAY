@@ -44,8 +44,10 @@ function draw(){
   for(const e of E)if(e.type==='d'&&(e.mode===2||e.mode===1&&e.mt<=16))drawAim(e);
   for(const e of E)drawEnemy(e);
   c.restore();
-  if(!P.dead)drawComet();
+  const big=P.squish>.02;                                                // a squeezed comet swells toward you: it is drawn over the frame
+  if(!P.dead&&!big)drawComet();
   drawParts();drawWalls();
+  if(!P.dead&&big)drawComet();
   for(const f of FL)label(f.s,f.x,f.y,f.size,f.col,Math.min(1,(f.m-f.t)/14));
   c.setTransform(DPR,0,0,DPR,0,0);
   drawOver();
@@ -135,6 +137,8 @@ function crown(r){                                                      // whoev
   c.closePath();c.fill();c.stroke();
 }
 
+/* The squeeze picture. Edit to taste: grow = how much bigger at a full meter, throb = the pulse, drop = how far the shadow falls. */
+const BULGE={grow:.5,throb:.05,drop:9};
 function drawComet(){
   const c=ctx,p=P,v=hyp(p.vx,p.vy),sup=p.superT>0,n=p.tr.length>>1,al=p.inv>0&&tick&4?.45:1,r=p.r,fk=R.fin?R.c1/cam:1;   // fk: the comet keeps its size on screen while the camera pulls away
   c.lineCap='round';
@@ -143,8 +147,11 @@ function drawComet(){
     c.beginPath();c.moveTo(p.tr[i*2-2],p.tr[i*2-1]);c.lineTo(p.tr[i*2],p.tr[i*2+1]);c.stroke();}
   c.lineCap='butt';
   if(inp.down&&inp.touch&&!R.fin){const a=aimPoint();c.globalAlpha=.3;c.strokeStyle=COL.paper;c.lineWidth=2;c.beginPath();c.arc(a.x,a.y,9,0,TAU);c.stroke();}
+  const q=p.squish>.02?p.squish:0;                                       // squeezed: no bending. It swells, throbs and lifts off the floor.
   c.save();c.translate(p.x,p.y);c.scale(fk,fk);
-  if(p.squish>.02){const a=Math.atan2(p.pny,p.pnx);c.rotate(a);c.scale(1-.45*p.squish,1+.32*p.squish);c.rotate(-a);}
+  if(q){const b=1+BULGE.grow*q+(calm?0:BULGE.throb*q*Math.sin(gt*(.25+.55*q)));
+    c.globalAlpha=.4*q;c.fillStyle='#000';c.beginPath();c.arc(0,BULGE.drop*q,(r+7)*b,0,TAU);c.fill();c.globalAlpha=1;   // its shadow falls further below as it rises
+    c.scale(b,b);}
   else if(v>1){const a=Math.atan2(p.vy,p.vx),s=1+Math.min(v/MOVE.cap,1.2)*.1;c.rotate(a);c.scale(s,1/s);c.rotate(-a);}
   const hot=sup?COL.green:p.top?'hsl('+(gt*9%360)+',95%,66%)':COL.paper;
   if(p.top){c.globalAlpha=al*.25;c.fillStyle=hot;c.beginPath();c.arc(0,0,r+11+Math.sin(gt*.4)*2,0,TAU);c.fill();}
@@ -152,9 +159,14 @@ function drawComet(){
   if(R.i>0&&p.dust>0&&!sup){c.strokeStyle=p.ready?COL.green:COL.amber;c.lineWidth=p.ready?5+Math.sin(gt*.3)*1.5:4;      // dust fills a ring around you
     c.beginPath();c.arc(0,0,r+11,-Math.PI/2,-Math.PI/2+TAU*p.dust/SUPER_COST);c.stroke();}
   c.fillStyle=p.ready||sup?COL.green:COL.teal;c.strokeStyle=COL.line;c.lineWidth=3;c.beginPath();c.arc(0,0,r,0,TAU);c.fill();c.stroke();
+  if(q){let g=c.createRadialGradient(0,0,r*.45,0,0,r);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,'+(.5*q)+')');   // the rim falls away
+    c.fillStyle=g;c.beginPath();c.arc(0,0,r-1.5,0,TAU);c.fill();
+    g=c.createRadialGradient(-r*.3,-r*.38,0,-r*.3,-r*.38,r*(.35+.5*q));g.addColorStop(0,'rgba(255,255,255,'+(.75*q)+')');g.addColorStop(1,'rgba(255,255,255,0)');   // the shine of a dome
+    c.fillStyle=g;c.beginPath();c.arc(0,0,r-1.5,0,TAU);c.fill();c.strokeStyle=COL.line;}
   const lx=v>1?p.vx/v:0,ly=v>1?p.vy/v:0,er=r*.3;c.lineWidth=2;
   for(const s of[-1,1]){const x=s*r*.38,y=-r*.12;
-    if(p.squish>.3){c.beginPath();c.moveTo(x-s*er*.7,y-er*.6);c.lineTo(x+s*er*.5,y);c.lineTo(x-s*er*.7,y+er*.6);c.stroke();continue;}
+    if(p.squish>.3){const w=er*(1+.45*p.squish);c.fillStyle=COL.paper;c.beginPath();c.arc(x,y,w,0,TAU);c.fill();c.stroke();   // eyes wide
+      c.fillStyle=COL.line;c.beginPath();c.arc(x,y,er*.3,0,TAU);c.fill();continue;}
     c.fillStyle=COL.paper;c.beginPath();c.arc(x,y,er,0,TAU);c.fill();c.stroke();
     c.fillStyle=COL.line;c.beginPath();c.arc(x+lx*er*.4,y+ly*er*.4,er*.5,0,TAU);c.fill();}
   c.beginPath();
