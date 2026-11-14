@@ -106,7 +106,7 @@ function gongNow(nx,ny){
   const r=R,p=P;
   if(mode==='endless'){EW++;if(EW>save.endless.best)save.endless.best=EW;save.hints.gong=1;store();r.res={e:1,n:EW,s:0};}   // Endless: one more wall, nothing else to score
   else{const s=1|(r.hurt?0:2)|(r.best>=Math.ceil(r.popped*.75)?4:0),sv=save.rooms[r.i]||{s:0};
-    sv.s|=s;delete sv.t;save.rooms[r.i]=sv;save.hints.gong=1;store();
+    sv.s|=s;delete sv.t;save.rooms[r.i]=sv;save.hints.gong=1;store();bestChain(r.i,r.best);
     r.res={i:r.i,s,best:r.best,total:r.popped};}
   freeze=12;shake=32;flash=.9;slow=.3;slowT=46;buzz(70);sfx.gong(Math.min(r.i,15));hint.t=0;
   ringFx(p.x,p.y,COL.amber,12,Math.max(W,H)*1.1,70,12);ringFx(p.x,p.y,COL.paper,12,Math.max(W,H)*.6,40,6);
@@ -120,6 +120,9 @@ function gongNow(nx,ny){
     const v=hyp(p.vx,p.vy)||1,dx=p.vx/v,dy=p.vy/v;p.vx=dx*MOVE.cap;p.vy=dy*MOVE.cap;r.sky=[];
     for(let k=0;k<150;k++){const a=rr(-2500,6500),b=rr(-4500,4500);r.sky.push({x:p.x+dx*a-dy*b,y:p.y+dy*a+dx*b});}}
 }
+
+/* The best chain ever made in a room, kept whether the run ended at the wall or in a death. Returns the best before this run. */
+function bestChain(i,b){const sv=save.rooms[i]||{s:0},old=sv.c||0;if(b>old){sv.c=b;save.rooms[i]=sv;store();}return old;}
 
 const WALL_HINT='Bounce off walls to turn';
 function hintTick(){

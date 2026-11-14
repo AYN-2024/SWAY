@@ -8,10 +8,10 @@ function show(id){
   if(id==='title'){const d=doneCount(),b=save.endless.best;$('play').textContent=!d?'Play':d>=ROOMS.length?'Play again':'Play room '+(d+1);
     $('endlessBtn').hidden=!endlessOpen();$('endlessBtn').textContent=b?'Endless  ·  best '+b:'Endless';
     const st=stars();$('roomsBtn').textContent=st?'Rooms  ·  '+st+' of 30 stars':'Rooms';}                    // the stars still to win, on the first screen
-  if(id==='dead'){const e=mode==='endless',n=$('deadStats'),sp=P&&P.by==='spike';n.hidden=false;
+  if(id==='dead'){const e=mode==='endless',n=$('deadStats'),sp=P&&P.by==='spike',b=Math.max(R.best,P.chain),old=e?0:bestChain(R.i,b);n.hidden=false;
     $('deadTitle').textContent=sp?'Spiked':'Squished';$('deadTag').textContent=sp?'Leave it alone while it is spiky.':'If you stop, you die.';
     n.textContent=e?'You rang '+EW+(EW===1?' wall. ':' walls. ')+(EW>EB0?'New best.':'Best '+save.endless.best+'.')
-      :Math.max(0,R.total-R.popped)+' left to pop. Best chain '+Math.max(R.best,P.chain)+'.';}                 // the rooms: how close it was, and the best chain
+      :Math.max(0,R.total-R.popped)+' left to pop. Best chain '+b+'.'+(old&&b>old?' Your best in this room.':'');}   // the rooms: how close it was, the best chain, and whether it beat the one saved for this room
 }
 function hud(){
   if(!R||!P)return;const hb=$('hearts'),hs=hb.children;while(hs.length<P.maxH)hb.appendChild(hs[0].cloneNode(true));   // a fourth heart, if the stars bought one
