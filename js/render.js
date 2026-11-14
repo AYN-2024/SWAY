@@ -90,13 +90,13 @@ function drawEnemy(e){
   const c=ctx,T=TY[e.type],p=P,age=tick-e.born,sc=age<14?ease(age/14):1,r=e.r*(1+e.pulse*.14),wob=1+Math.sin((tick+e.ph)*.12)*.035;
   let dx=p.x-e.x,dy=p.y-e.y;const d=hyp(dx,dy)||1;dx/=d;dy/=d;
   c.save();c.translate(e.x+(e.type==='d'&&e.mode===1?(Math.random()-.5)*4:0),e.y);c.scale(sc*wob,sc/wob);
-  c.strokeStyle=COL.line;c.lineWidth=3;let br=r;
+  c.strokeStyle=COL.line;c.lineWidth=3;let br=r,nose=0;
   if(e.type==='p'){const big=e.mode===2,tip=big?r:r*1.12;br=big?r*.7:r*.94;                        // puffer: nubs, or real spikes
     c.fillStyle=e.mode===1&&gt&4?COL.paper:T.col;c.beginPath();
     for(let i=0;i<24;i++){const a=i*TAU/24+e.ph,q=i&1?br*.96:tip;c.lineTo(Math.cos(a)*q,Math.sin(a)*q);}
     c.closePath();c.fill();c.stroke();}
   c.fillStyle=T.col;c.beginPath();
-  if(e.type==='d'){const a=e.mode===0||(e.mode===1&&e.mt>16)?Math.atan2(dy,dx):Math.atan2(e.dy,e.dx);     // dasher: a nose that points where it will go
+  if(e.type==='d'){const a=nose=e.mode===0||(e.mode===1&&e.mt>16)?Math.atan2(dy,dx):Math.atan2(e.dy,e.dx);     // dasher: a nose that points where it will go
     c.arc(0,0,r,a+1,a-1+TAU);c.lineTo(Math.cos(a)*r*1.5,Math.sin(a)*r*1.5);c.closePath();}
   else c.arc(0,0,br,0,TAU);
   c.fill();c.stroke();
@@ -107,20 +107,25 @@ function drawEnemy(e){
     c.strokeStyle=COL.line;c.lineWidth=11;c.stroke();c.strokeStyle=COL.paper;c.lineWidth=6;c.stroke();c.lineCap='butt';}
   face(e,dx,dy,clamp(br*.5,10,30));
   if(e.type==='p'&&e.mode===2)shine(e,r);
+  if(e.type==='d'&&(e.mode===1||e.mode===2))spark(Math.cos(nose)*r*1.45,Math.sin(nose)*r*1.45,shineSize(r,gt));   // a dasher: one sparkle on the tip of its nose, only while it winds up and charges
   if(p.dead&&tick-e.crown<600)crown(br);
   c.restore();
 }
 /* The shine on a puffer's spikes: white sparkles that pop on one tip, then on another, for as long as the spikes are out.
    Two at a time, half a beat apart and never on neighbouring tips, so one is always showing.
+   A dasher has the same sparkle, one, on the tip of its nose, while it winds up and charges (drawEnemy).
    Edit to taste: count = how many, every = ticks per sparkle, size = how big against the body (min and max in units), hop = how many tips it jumps. */
 const SHINE={count:2,every:22,size:.42,min:11,max:20,hop:5};
 function shine(e,r){
-  const c=ctx,big=clamp(r*SHINE.size,SHINE.min,SHINE.max);
   for(let j=0;j<SHINE.count;j++){
-    const t=gt+j*SHINE.every/SHINE.count,k=((t/SHINE.every|0)*SHINE.hop+j*4)%12,a=k*TAU/12+e.ph,z=big*Math.sin((calm?.5:t%SHINE.every/SHINE.every)*Math.PI);
-    if(z<1)continue;c.save();c.translate(Math.cos(a)*r*.93,Math.sin(a)*r*.93);c.beginPath();
-    for(let i=0;i<8;i++){const b=i*TAU/8,q=i&1?z*.3:z;c.lineTo(Math.cos(b)*q,Math.sin(b)*q);}
-    c.closePath();c.fillStyle=COL.paper;c.strokeStyle=COL.line;c.lineWidth=1.5;c.fill();c.stroke();c.restore();}
+    const t=gt+j*SHINE.every/SHINE.count,k=((t/SHINE.every|0)*SHINE.hop+j*4)%12,a=k*TAU/12+e.ph;
+    spark(Math.cos(a)*r*.93,Math.sin(a)*r*.93,shineSize(r,t));}
+}
+const shineSize=(r,t)=>clamp(r*SHINE.size,SHINE.min,SHINE.max)*Math.sin((calm?.5:t%SHINE.every/SHINE.every)*Math.PI);   // a sparkle pops and shrinks once every SHINE.every ticks
+function spark(x,y,z){                                                             // one white four-point star, z units from centre to point
+  if(z<1)return;const c=ctx;c.save();c.translate(x,y);c.beginPath();
+  for(let i=0;i<8;i++){const b=i*TAU/8,q=i&1?z*.3:z;c.lineTo(Math.cos(b)*q,Math.sin(b)*q);}
+  c.closePath();c.fillStyle=COL.paper;c.strokeStyle=COL.line;c.lineWidth=1.5;c.fill();c.stroke();c.restore();
 }
 function face(e,dx,dy,f){
   const c=ctx,ex=f*.44,ey=-f*.1,scared=e.fear>.3,er=f*(scared?.4:.32),smug=!P.top&&!P.dead&&hyp(P.vx,P.vy)<MOVE.cap*.4;
