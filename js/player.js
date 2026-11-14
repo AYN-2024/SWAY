@@ -2,12 +2,9 @@
    and being pinned is the only thing that ever hurts. */
 function newPlayer(x,y){
   return{x,y,vx:0,vy:0,r:MOVE.r,tr:[],top:false,over:0,hearts:3,squish:0,pnx:0,pny:-1,inv:0,superT:0,dust:0,ready:false,
-    chain:0,rest:0,sq:0,sqA:0,sqN:0,shoved:0,heal:0,bonkT:0,tE:0,tS:0,sqMax:0,dead:false,moved:0,maxH:3,reach:120,shoveT:0,
+    chain:0,rest:0,shoved:0,heal:0,bonkT:0,tE:0,tS:0,sqMax:0,dead:false,moved:0,maxH:3,reach:120,shoveT:0,
     wr:MOVE.r};     // walls stop the body. The dust ring and the glow are cut off at the wall line when they are drawn.
 }
-/* A hit flattens the comet against what it hit for a moment. Picture only. amount = how flat at top speed, ticks = how long. */
-const SQUASH={amount:.28,ticks:7};
-function squashHit(nx,ny,speed){const p=P,a=SQUASH.amount*Math.min(1,speed/MOVE.cap);if(a>.04){p.sq=SQUASH.ticks;p.sqA=a;p.sqN=Math.atan2(ny,nx);}}
 /* On touch the aim sits above the thumb, never under it. */
 function aimPoint(){const lift=inp.touch?Math.min(92,VH*.13):0;return{x:(inp.sx-OX)/cam,y:(inp.sy-lift-OY)/cam};}
 
@@ -24,7 +21,7 @@ function playerTick(){
   const q=inp.down||ix||iy?MOVE.held:MOVE.released;p.vx*=q;p.vy*=q;
   let v=hyp(p.vx,p.vy);if(v>cap){p.vx*=cap/v;p.vy*=cap/v;v=cap;}
   p.x+=p.vx;p.y+=p.vy;p.moved+=v;
-  if(p.sq>0)p.sq--;if(p.over>0)p.over--;if(p.inv>0)p.inv--;if(p.shoved>0)p.shoved--;if(p.bonkT>0)p.bonkT--;if(p.shoveT>0)p.shoveT--;
+  if(p.over>0)p.over--;if(p.inv>0)p.inv--;if(p.shoved>0)p.shoved--;if(p.bonkT>0)p.bonkT--;if(p.shoveT>0)p.shoveT--;
   if(sup&&--p.superT===0)p.inv=Math.max(p.inv,30);
   p.top=sup||(v>=TOP-1e-6&&p.shoved<=0);                 // speed you were handed by a shove does not count
   if(v<.6){if(++p.rest>24)endChain();}else p.rest=0;     // a chain lives while the comet moves and dies when it rests
@@ -47,7 +44,6 @@ function wallHit(nx,ny,vn){                              // (nx,ny) points back 
     if(vn>3&&p.bonkT<=0){p.bonkT=20;sfx.dud();ringFx(p.x,p.y,COL.amber,6,46,16,3);if(++R.duds>1)say('Faster',120);}
   }
   if(nx)p.vx=-p.vx*MOVE.rebound;else p.vy=-p.vy*MOVE.rebound;
-  squashHit(nx,ny,vn);
   if(vn>2){sfx.wall(Math.min(1,vn/MOVE.cap));if(vn>9){shake=Math.max(shake,vn*.3);puff(p.x-nx*p.wr,p.y-ny*p.wr,COL.wall,5,3);}}
   return false;
 }

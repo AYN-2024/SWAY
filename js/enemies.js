@@ -92,7 +92,7 @@ function contact(){
   for(let i=ST.length-1;i>=0;i--){const s=ST[i],dx=p.x-s.x,dy=p.y-s.y,m=s.r+p.r,d=hyp(dx,dy)||.01;if(d>m+1.5)continue;
     if(d<m){if(p.top){breakStone(i);continue;}
       const nx=dx/d,ny=dy/d,vn=p.vx*nx+p.vy*ny;p.x+=nx*(m-d);p.y+=ny*(m-d);
-      if(vn<0){p.vx-=(1+MOVE.rebound)*vn*nx;p.vy-=(1+MOVE.rebound)*vn*ny;squashHit(nx,ny,-vn);if(vn<-2)sfx.wall(Math.min(1,-vn/MOVE.cap));}}
+      if(vn<0){p.vx-=(1+MOVE.rebound)*vn*nx;p.vy-=(1+MOVE.rebound)*vn*ny;if(vn<-2)sfx.wall(Math.min(1,-vn/MOVE.cap));}}
     p.tS++;}
   for(let i=E.length-1;i>=0;i--){const e=E[i],dx=p.x-e.x,dy=p.y-e.y,m=e.r+p.r;
     if(dx>m+2||dx<-m-2||dy>m+2||dy<-m-2)continue;const d=hyp(dx,dy)||.01;if(d>m+1.5)continue;
@@ -114,7 +114,7 @@ function strike(e,nx,ny,blast){                                                 
     freeze=Math.max(freeze,5);shake=Math.max(shake,15);buzz(20);sfx.peel();
     puff(e.x+nx*e.r,e.y+ny*e.r,COL.paper,16,6);ringFx(e.x,e.y,COL.paper,e.r*.8,e.r*1.5,20,5);return;}
   if(!blast&&e.type==='b'&&e.n>=TOUGH&&!e.cut){e.cut=1;e.n=Math.ceil(e.n/2);e.pulse=1;e.stun=30;e.iv=34;e.vx-=nx*3;e.vy-=ny*3;chainUp();
-    const vn=p.vx*nx+p.vy*ny;if(vn<0){p.vx-=1.8*vn*nx;p.vy-=1.8*vn*ny;}p.x=e.x+nx*(e.r+p.r+1);p.y=e.y+ny*(e.r+p.r+1);squashHit(nx,ny,MOVE.cap);
+    const vn=p.vx*nx+p.vy*ny;if(vn<0){p.vx-=1.8*vn*nx;p.vy-=1.8*vn*ny;}p.x=e.x+nx*(e.r+p.r+1);p.y=e.y+ny*(e.r+p.r+1);
     freeze=Math.max(freeze,5);shake=Math.max(shake,13);buzz(20);sfx.peel();dustAt(e.x,e.y,4);
     puff(e.x+nx*e.r,e.y+ny*e.r,TY.b.col,18,6);ringFx(e.x,e.y,TY.b.col,e.r*.8,e.r*1.5,20,5);return;}
   pop(e);
@@ -135,10 +135,11 @@ function pop(e){
 /* A touch that is not a pop: the body throws you back and the chain ends. It costs no heart.
    One throw, then a short gap (SHOVE.gap ticks) where a touch only stops you, so being pinned still works as before. */
 const SHOVE={base:8,perRing:.8,rings:4,gap:40};
+const SPIKE={push:1.5,dark:60};   // a spike hit: push = the little speed you keep, dark = ticks with no glow
 function bumpInto(e,nx,ny,o){
-  const p=P,vn=p.vx*nx+p.vy*ny,en=e.vx*nx+e.vy*ny;p.x+=nx*o;p.y+=ny*o;squashHit(nx,ny,Math.max(-vn,p.shoveT<=0?8:0));
-  if(e.type==='p'&&e.mode===2){p.vx=nx*13;p.vy=ny*13;p.shoved=18;p.squish=Math.min(.9,p.squish+.2);endChain();
-    sfx.spike();shake=Math.max(shake,10);puff(p.x,p.y,TY.p.col,8,5);return;}
+  const p=P,vn=p.vx*nx+p.vy*ny,en=e.vx*nx+e.vy*ny;p.x+=nx*o;p.y+=ny*o;
+  if(e.type==='p'&&e.mode===2&&p.shoveT<=0){p.vx=nx*SPIKE.push;p.vy=ny*SPIKE.push;p.shoved=SPIKE.dark;p.shoveT=SHOVE.gap;p.squish=Math.min(.9,p.squish+.2);endChain();   // spikes: stopped dead, and no glow for a second
+    sfx.spike();shake=Math.max(shake,14);buzz(20);puff(p.x,p.y,TY.p.col,14,6);return;}
   if(e.type==='d'&&e.mode===2){p.vx+=e.dx*11;p.vy+=e.dy*11;p.shoved=18;p.squish=Math.min(.9,p.squish+.3);e.mode=3;e.mt=60;endChain();
     sfx.bonk();shake=Math.max(shake,14);return;}
   if(e.iv>0){if(vn<0){p.vx-=1.7*vn*nx;p.vy-=1.7*vn*ny;}return;}                   // just struck: solid for a moment, no penalty
