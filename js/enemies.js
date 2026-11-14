@@ -40,7 +40,8 @@ function enemiesTick(){
   for(const e of E){
     e.fear*=.88;e.pulse*=.9;if(e.iv>0)e.iv--;
     if(e.st===0){const dx=e.tx-e.x,dy=e.ty-e.y,d=hyp(dx,dy)||1;e.vx=dx/d*2.8;e.vy=dy/d*2.8;if(d<4)e.st=1;}   // sliding in from outside
-    else if(e.stun>0||e.type==='z'||p.dead){if(e.stun>0)e.stun--;e.vx*=.9;e.vy*=.9;}
+    else if(e.stun>0||e.type==='z'||p.dead){e.vx*=.9;e.vy*=.9;
+      if(e.stun>0){e.stun--;if(e.type==='p'&&e.mode===2&&++e.mt>120){e.mode=0;e.mt=0;}}}   // a stunned puffer's spikes still run out: the hit that takes a heart stuns it, and the spikes must not outlast the blink
     else brain(e,p,pv,f,hx,hy,spd);
     e.x+=e.vx;e.y+=e.vy;
     if(e.st===1&&e.type!=='z'&&!e.am&&--e.grow<=0){e.grow=R.def.grow*60*rr(.8,1.25);if(e.n<Math.min(R.def.max,TY[e.type].mx)&&!full){e.n++;e.pulse=1;sfx.lock();}}
@@ -137,11 +138,11 @@ function pop(e){
 /* A touch that is not a pop: the body throws you back and the chain ends. It costs no heart.
    One throw, then a short gap (SHOVE.gap ticks) where a touch only stops you, so being pinned still works as before. */
 const SHOVE={base:8,perRing:.8,rings:4,gap:40};
-const SPIKE={push:1.5,dark:60};   // a spike touch costs a heart unless you are blinking. push = the little speed you keep, dark = ticks with no glow
+const SPIKE={push:1.5,dark:60,after:90};   // a spike touch costs a heart unless you are blinking. push = the little speed you keep, dark = ticks with no glow, after = the most ticks the spikes stay out once they have taken a heart (the blink is 110)
 function bumpInto(e,nx,ny,o){
   const p=P,vn=p.vx*nx+p.vy*ny,en=e.vx*nx+e.vy*ny;p.x+=nx*o;p.y+=ny*o;
   if(e.type==='p'&&e.mode===2&&p.spikeT<=tick){p.spikeT=tick+SHOVE.gap;p.vx=nx*SPIKE.push;p.vy=ny*SPIKE.push;p.shoved=SPIKE.dark;p.shoveT=SHOVE.gap;p.squish=Math.min(.9,p.squish+.2);endChain();   // spikes: stopped dead, and no glow for a second
-    sfx.spike();shake=Math.max(shake,14);buzz(20);puff(p.x,p.y,TY.p.col,14,6);if(p.inv<=0)hurt('spike');return;}   // and a heart, unless you are blinking. Blinking means safe, here as everywhere. The gap (SHOVE.gap ticks) only stops one bump from counting twice
+    sfx.spike();shake=Math.max(shake,14);buzz(20);puff(p.x,p.y,TY.p.col,14,6);if(p.inv<=0){hurt('spike');e.mt=Math.max(e.mt,120-SPIKE.after);if(!p.dead)word(p.x,p.y-p.r-22,'Spiked',COL.paper,20,60);}return;}   // and a heart, unless you are blinking. Blinking means safe, here as everywhere. The gap (SHOVE.gap ticks) only stops one bump from counting twice
   if(e.type==='d'&&e.mode===2){p.vx+=e.dx*11;p.vy+=e.dy*11;p.shoved=18;p.squish=Math.min(.9,p.squish+.3);e.mode=3;e.mt=60;endChain();
     sfx.bonk();shake=Math.max(shake,14);return;}
   if(e.iv>0){if(vn<0){p.vx-=1.7*vn*nx;p.vy-=1.7*vn*ny;}return;}                   // just struck: solid for a moment, no penalty

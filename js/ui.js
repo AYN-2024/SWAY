@@ -6,10 +6,12 @@ function show(id){
   for(const s of document.querySelectorAll('.scr'))s.hidden=s.id!==id;
   $('ov').hidden=!id;mapOn=id==='title';$('ov').classList.toggle('clear',mapOn);$('ov').classList.toggle('soft',id==='end');$('hud').hidden=state==='title'||state==='end';
   if(id==='title'){const d=doneCount(),b=save.endless.best;$('play').textContent=!d?'Play':d>=ROOMS.length?'Play again':'Play room '+(d+1);
-    $('endlessBtn').hidden=!endlessOpen();$('endlessBtn').textContent=b?'Endless  ·  best '+b:'Endless';}
-  if(id==='dead'){const e=mode==='endless',n=$('deadStats'),sp=P&&P.by==='spike';n.hidden=!e;
+    $('endlessBtn').hidden=!endlessOpen();$('endlessBtn').textContent=b?'Endless  ·  best '+b:'Endless';
+    const st=stars();$('roomsBtn').textContent=st?'Rooms  ·  '+st+' of 30 stars':'Rooms';}                    // the stars still to win, on the first screen
+  if(id==='dead'){const e=mode==='endless',n=$('deadStats'),sp=P&&P.by==='spike';n.hidden=false;
     $('deadTitle').textContent=sp?'Spiked':'Squished';$('deadTag').textContent=sp?'Leave it alone while it is spiky.':'If you stop, you die.';
-    if(e)n.textContent='You rang '+EW+(EW===1?' wall. ':' walls. ')+(EW>EB0?'New best.':'Best '+save.endless.best+'.');}
+    n.textContent=e?'You rang '+EW+(EW===1?' wall. ':' walls. ')+(EW>EB0?'New best.':'Best '+save.endless.best+'.')
+      :Math.max(0,R.total-R.popped)+' left to pop. Best chain '+Math.max(R.best,P.chain)+'.';}                 // the rooms: how close it was, and the best chain
 }
 function hud(){
   if(!R||!P)return;const hb=$('hearts'),hs=hb.children;while(hs.length<P.maxH)hb.appendChild(hs[0].cloneNode(true));   // a fourth heart, if the stars bought one
@@ -42,7 +44,7 @@ function openRooms(){
     b.onclick=()=>begin(i);g.appendChild(b);
   });
   const st=stars(),nx=PERKS.find(p=>st<p[0]);                              // what the next stars buy
-  $('perkNote').textContent=st+' of 30 stars. '+perksOn()+(nx?(nx[0]-st)+' more: '+nx[1]+'.':'');
+  $('perkNote').textContent=st+' of 30 stars. '+perksOn()+(nx?(nx[0]-st)+' more: '+nx[1]+'.':'')+(endlessOpen()?'':' Endless opens after room 10.');   // the perks pay in Endless: say when it opens, while it is shut
   state='title';show('rooms');
 }
 function showEnd(){
