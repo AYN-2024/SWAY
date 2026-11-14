@@ -54,6 +54,8 @@ const sfx={
   hurt(){tone(330,.32,'square',.15,104);hiss(.25,.22,380);},
   heal(){tone(660,.1,'sine',.12);tone(990,.18,'sine',.12,0,.09);},
   clear(){[392,494,587].forEach((f,i)=>tone(f,.3,'triangle',.12,0,i*.07));},
+  glowOn(){tone(660,.12,'triangle',.1,990);},
+  glowOff(){tone(520,.14,'triangle',.08,300);},
   dud(){tone(118,.2,'sine',.22,84);hiss(.05,.1,280);},
   star(i){tone(784*Math.pow(1.26,i),.22,'triangle',.14);},
   ui(){tone(540,.05,'triangle',.07);},
