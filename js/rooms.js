@@ -66,7 +66,6 @@ function startRoom(i,carry){
     ink:'hsl('+hue+',33%,13.5%)',grid:'hsl('+hue+',38%,21%)',wall:'hsl('+hue+',32%,41%)'};
   for(const q of def.stones||[])ST.push({x:q[0]*W,y:q[1]*H,r:25});
   cam=c0;hint.t=0;if(i===0&&!save.hints.drag)say('Drag',1e6);
-  if(i===1&&mode==='rooms'&&!save.hints.wall){save.hints.wall=1;store();say('Bounce off walls to turn',300);}   // a glowing comet turns too wide for the room: the walls are the turn
   hud();
 }
 
@@ -122,11 +121,15 @@ function gongNow(nx,ny){
     for(let k=0;k<150;k++){const a=rr(-2500,6500),b=rr(-4500,4500);r.sky.push({x:p.x+dx*a-dy*b,y:p.y+dy*a+dx*b});}}
 }
 
+const WALL_HINT='Bounce off walls to turn';
 function hintTick(){
   const p=P,r=R;if(hint.t>0)hint.t--;
   if(r.i===0){
     if(hint.s==='Drag'&&hint.t>0&&p.moved>260){save.hints.drag=1;hint.t=0;}
     if(!save.hints.glow&&p.top){save.hints.glow=1;word(p.x,p.y-p.r-22,'Glow!',COL.amber,22,50);}
     if(!save.hints.pop&&r.popped>0){save.hints.pop=1;store();say('Pop them all',170);}
+    if(!save.hints.wall){                                                 // a glowing comet turns too wide for the room: the walls are the turn. Said while the two sleepers wait: nothing moves, nothing can hurt
+      if(r.wi===2&&hint.t<=0)say(WALL_HINT,1e6);
+      else if(r.wi>2&&hint.s===WALL_HINT){hint.t=0;save.hints.wall=1;store();}}
   }
 }

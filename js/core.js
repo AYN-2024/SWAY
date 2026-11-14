@@ -46,7 +46,8 @@ try{const s=JSON.parse(localStorage.getItem('gong.v1'));if(s&&Array.isArray(s.ro
 function store(){try{localStorage.setItem('gong.v1',JSON.stringify(save));}catch(e){}}
 if(!save.endless||typeof save.endless.best!=='number')save.endless={best:0};
 /* Stars buy perks, and the perks only work in Endless: 10 = Super ready at the start, 20 = a fourth heart, 30 = dust from twice as far. */
-const PERKS=[[10,'start Endless with Super ready'],[20,'a fourth heart in Endless'],[30,'dust comes from twice as far in Endless']];
+const PERKS=[[10,'start Endless with Super ready','Super ready at the start'],[20,'a fourth heart in Endless','a fourth heart'],[30,'dust comes from twice as far in Endless','dust from twice as far']];
+const perksOn=()=>{const n=stars(),on=PERKS.filter(p=>n>=p[0]).map(p=>p[2]);return on.length?'On in Endless: '+on.join(', ')+'. ':'';};   // the perks already won, in words
 function stars(){let n=0;for(let i=0;i<10;i++){const r=save.rooms[i];if(r)n+=(r.s&1)+(r.s>>1&1)+(r.s>>2&1);}return n;}
 const perks=()=>{const n=stars();return{sup:n>=PERKS[0][0],heart:n>=PERKS[1][0],dust:n>=PERKS[2][0]};};
 const buzz=ms=>{try{if(navigator.vibrate)navigator.vibrate(ms);}catch(e){}};

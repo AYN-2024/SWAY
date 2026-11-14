@@ -27,7 +27,10 @@ function start(i){
 }
 function pause(){
   if(state!=='play'||R.fin)return;state='pause';inp.down=false;inp.keys.clear();
-  $('mute').textContent=save.mute?'Sound off':'Sound on';$('restart').textContent=mode==='endless'?'Restart run':'Restart room';show('pause');
+  $('mute').textContent=save.mute?'Sound off':'Sound on';$('restart').textContent=mode==='endless'?'Restart run':'Restart room';
+  const ps=$('pauseStars');ps.hidden=mode==='endless';                                  // where this room's stars stand: the heart star and the chain star
+  ps.textContent=(R.hurt?'A heart was lost in this room. ':'No heart lost in this room. ')+'Best chain '+Math.max(R.best,P.chain)+'. The star needs '+Math.ceil(R.total*.75)+'.';
+  show('pause');
 }
 function resume(){if(state!=='pause')return;state='play';show('');}
 function openRooms(){
@@ -39,11 +42,11 @@ function openRooms(){
     b.onclick=()=>begin(i);g.appendChild(b);
   });
   const st=stars(),nx=PERKS.find(p=>st<p[0]);                              // what the next stars buy
-  $('perkNote').textContent=st+' of 30 stars. '+(nx?(nx[0]-st)+' more: '+nx[1]+'.':'All three Endless perks are on.');
+  $('perkNote').textContent=st+' of 30 stars. '+perksOn()+(nx?(nx[0]-st)+' more: '+nx[1]+'.':'');
   state='title';show('rooms');
 }
 function showEnd(){
-  $('endStats').textContent=stars()+' of 30 stars.';state='end';show('end');
+  $('endStats').textContent=stars()+' of 30 stars. '+perksOn();state='end';show('end');
 }
 
 /* One tick of the game, 60 of them a second. */

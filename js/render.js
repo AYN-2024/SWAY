@@ -92,7 +92,7 @@ function drawEnemy(e){
   c.save();c.translate(e.x+(e.type==='d'&&e.mode===1?(Math.random()-.5)*4:0),e.y);c.scale(sc*wob,sc/wob);
   c.strokeStyle=COL.line;c.lineWidth=3;let br=r;
   if(e.type==='p'){const big=e.mode===2,tip=big?r:r*1.12;br=big?r*.7:r*.94;                        // puffer: nubs, or real spikes
-    c.fillStyle=big||e.mode===1&&gt&4?COL.paper:T.col;c.beginPath();                              // spikes out: white, steady, like teeth. The flicker before them is the warning
+    c.fillStyle=e.mode===1&&gt&4?COL.paper:T.col;c.beginPath();
     for(let i=0;i<24;i++){const a=i*TAU/24+e.ph,q=i&1?br*.96:tip;c.lineTo(Math.cos(a)*q,Math.sin(a)*q);}
     c.closePath();c.fill();c.stroke();}
   c.fillStyle=T.col;c.beginPath();
@@ -106,8 +106,18 @@ function drawEnemy(e){
   if(e.type==='h'){c.lineCap='round';c.beginPath();c.arc(0,0,br+5,e.ang-1.13,e.ang+1.13);
     c.strokeStyle=COL.line;c.lineWidth=11;c.stroke();c.strokeStyle=COL.paper;c.lineWidth=6;c.stroke();c.lineCap='butt';}
   face(e,dx,dy,clamp(br*.5,10,30));
+  if(e.type==='p'&&e.mode===2)shine(e,r);
   if(p.dead&&tick-e.crown<600)crown(br);
   c.restore();
+}
+/* The shine on a puffer's spikes: a white sparkle that pops on one tip, then on another, for as long as the spikes are out.
+   Edit to taste: every = ticks per sparkle, size = how big against the body (min and max in units), hop = how many tips it jumps. */
+const SHINE={every:22,size:.42,min:11,max:20,hop:5};
+function shine(e,r){
+  const c=ctx,k=(gt/SHINE.every|0)*SHINE.hop%12,a=k*TAU/12+e.ph,ph=calm?.5:gt%SHINE.every/SHINE.every,z=clamp(r*SHINE.size,SHINE.min,SHINE.max)*Math.sin(ph*Math.PI);
+  if(z<1)return;c.save();c.translate(Math.cos(a)*r*.93,Math.sin(a)*r*.93);c.beginPath();
+  for(let i=0;i<8;i++){const b=i*TAU/8,q=i&1?z*.3:z;c.lineTo(Math.cos(b)*q,Math.sin(b)*q);}
+  c.closePath();c.fillStyle=COL.paper;c.strokeStyle=COL.line;c.lineWidth=1.5;c.fill();c.stroke();c.restore();
 }
 function face(e,dx,dy,f){
   const c=ctx,ex=f*.44,ey=-f*.1,scared=e.fear>.3,er=f*(scared?.4:.32),smug=!P.top&&!P.dead&&hyp(P.vx,P.vy)<MOVE.cap*.4;
@@ -194,7 +204,7 @@ function drawOver(){
   if(hint.t>0&&hint.s==='Drag'){const k=gt%120/120,a=k<.1?k*10:k>.8?(1-k)*5:1,q=ease(Math.min(1,k*1.4)),                // a ghost thumb shows the drag
       x=lerp(OX+p.x*cam,cx,q),y=lerp(OY+p.y*cam+70,OY+H*.3*cam+120,q);
     c.globalAlpha=.16*a;c.fillStyle=COL.paper;c.beginPath();c.arc(x,y,26,0,TAU);c.fill();c.globalAlpha=.6*a;c.strokeStyle=COL.paper;c.lineWidth=3;c.stroke();c.globalAlpha=1;}
-  if(hint.t>0&&hint.s)label(hint.s,cx,fr.y+fr.h*.86,24,COL.paper,Math.min(1,hint.t/20));
+  if(hint.t>0&&hint.s&&!(r.res&&r.intro>0))label(hint.s,cx,fr.y+Math.max(fr.h*.2,fr.h*.09+70),24,COL.paper,Math.min(1,hint.t/20));   // near the top, away from the thumb and clear of the room name. It waits while the stars card is up
   if(r.res&&r.res.e&&r.intro>0){const n=120-r.intro,a=Math.min(1,n/10,r.intro/14),y=fr.y+fr.h*.26;                     // Endless: how many walls so far
     label(''+r.res.n,cx,y,84,COL.amber,a,900);label(r.res.n===1?'wall rung':'walls rung',cx,y+62,18,COL.paper,a);
     if(r.res.n>EB0&&EB0>0)label('New best',cx,y+90,15,COL.muted,a,700);}
