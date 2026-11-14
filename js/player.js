@@ -1,4 +1,4 @@
-/* player: the comet. Drag pulls it, letting go brakes it, glowing pops things,
+/* player: the comet. Drag pulls it, letting go lets it coast, glowing pops things,
    and being pinned is the only thing that ever hurts. */
 function newPlayer(x,y){
   return{x,y,vx:0,vy:0,r:MOVE.r,tr:[],top:false,over:0,hearts:3,squish:0,pnx:0,pny:-1,inv:0,superT:0,dust:0,ready:false,

@@ -42,8 +42,7 @@ function openRooms(){
   state='title';show('rooms');
 }
 function showEnd(){
-  let st=stars(),t=0;for(let i=0;i<ROOMS.length;i++)if(save.rooms[i])t+=save.rooms[i].t;
-  $('endStats').textContent=st+' of 30 stars. Your best times add up to '+clock(t)+'.';state='end';show('end');
+  $('endStats').textContent=stars()+' of 30 stars.';state='end';show('end');
 }
 
 /* One tick of the game, 60 of them a second. */
@@ -71,7 +70,7 @@ function frame(t){
   audioFrame();draw();
 }
 
-/* Input: one thumb. Drag to fly, let go to brake, double-tap for Super. */
+/* Input: one thumb. Drag to fly, let go to coast, double-tap for Super. */
 cv.addEventListener('pointerdown',e=>{
   if(state!=='play')return;e.preventDefault();audioOn();
   if(inp.down&&e.pointerId!==inp.pid){inp.sup=true;return;}                              // a second finger fires Super too

@@ -11,7 +11,7 @@ If you stop, you die.
 ## How to play
 
 - Drag to fly. On a phone the comet aims above your thumb, never under it.
-- Let go to brake.
+- Let go to coast.
 - Only a glowing comet (rainbow tail) pops things. Touch an enemy without glowing and it throws you back. Walls just bounce you.
 - Getting pinned between two bodies, or a body and a wall, costs a heart. Three hearts per room.
 - Dust fills the ring around you. When you turn green, double-tap for Super.
