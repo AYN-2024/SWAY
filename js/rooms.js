@@ -10,13 +10,13 @@ const ROOMS=[
   {name:'Rush',zoom:.9,grow:6,max:10,waves:[[0,'d1 b1 b1'],[6,'d1 b2 b1 b1'],[7,'d1 d1 b2 b1'],[7,'s2 b2 d1']]},
   {name:'Stones',zoom:.87,grow:6,max:10,stones:[[.25,.24],[.5,.2],[.75,.24],[.2,.5],[.5,.5],[.8,.5],[.25,.76],[.5,.8],[.75,.76]],
     waves:[[0,'b2 b1 b1 b2'],[6,'s2 b2 d1'],[7,'B2 b1'],[5,'b2 b1 b2 d1']]},
-  {name:'Puffers',zoom:.84,grow:5.5,max:10,waves:[[0,'p1 b2 b1 b1'],[6,'p2 s2 b2'],[7,'p2 d1 b1 b2'],[7,'p1 b3 s2 d1']]},
-  {name:'Shields',zoom:.81,grow:5.5,max:10,waves:[[0,'h1 b1 b1'],[6,'h1 b2 b1 p1'],[7,'h2 s2 b1'],[7,'h1 b2 d1']]},
+  {name:'Puffers',zoom:.84,grow:5.5,max:10,waves:[[0,'p1 b2 b1 b1 b2'],[6,'p2 s2 b2 b2'],[7,'p2 d1 b1 b2 b2'],[7,'p1 b3 s2 d1 b2']]},
+  {name:'Shields',zoom:.81,grow:5.5,max:10,waves:[[0,'h1 b1 b1 b2'],[6,'h1 b2 b1 p1 b2'],[7,'h2 s2 b1 b2'],[7,'h1 b2 d1 b2']]},
   {name:'Crowd',zoom:.78,grow:4.5,max:10,sp:1.25,stones:[[.3,.3],[.7,.3],[.5,.5],[.3,.7],[.7,.7]],
     waves:[[0,'b2 b1 b2 s2 d1'],[5,'h1 b2 b2 p1 b1'],[6,'s3 d1 b3 b1 h2'],[6,'B2 b2 b1 s2 p2'],[6,'d1 d1 b3 b2 h1']]},
   {name:'The walls',zoom:.75,grow:5,max:10,sp:1.2,shrink:[.25,58],
-    waves:[[0,'b2 b1 b1 s2'],[5,'d1 b2 b2 h1'],[5,'s2 b1 p1 b2'],[5,'b3 d1 s2 b1'],[5,'h2 b2 d1']]},
-  {name:'The giant',zoom:.72,grow:5,max:10,sp:1.3,waves:[[0,'G7@.5,.28'],[8,'d1 h1 b2'],[10,'p1 d1 b2'],[10,'h2 d1 s2'],[10,'d1 d1 b3']]},
+    waves:[[0,'b2 b1 b1 s2 b2'],[5,'d1 b2 b2 h1 b2'],[5,'s2 b1 p1 b2 b2'],[5,'b3 d1 s2 b1 b2'],[5,'h2 b2 d1 b2']]},
+  {name:'The giant',zoom:.72,grow:5,max:10,sp:1.3,waves:[[0,'G7@.5,.28'],[8,'d1 h1 b2 b2'],[10,'p1 d1 b2 b2'],[10,'h2 d1 s2 b2'],[10,'d1 d1 b3 b2']]},
 ];
 /* Endless: opens once all ten are rung. The same rule, crowds made on the spot, and one set of hearts for the whole run.
    The score is walls rung. Everything that sets how hard wall n is sits in ENDLESS: edit it to rebalance. */

@@ -32,6 +32,8 @@ function hiss(dur,vol,freq,when){
   s.connect(f);f.connect(g);g.connect(master);s.start(t,Math.random());s.stop(t+dur+.03);
 }
 
+/* The wind that follows your speed. vol = how loud at top speed, low and rise = how dark it starts and how far it climbs (Hz). */
+const WIND={vol:.035,low:200,rise:650};
 const SCALE=[0,2,4,7,9];
 const sfx={
   pop(chain,big){
@@ -75,6 +77,6 @@ const sfx={
 function audioFrame(){
   if(!AC)return;const live=state==='play'&&P&&!P.dead,t=AC.currentTime;
   const f=live?clamp(hyp(P.vx,P.vy)/MOVE.cap,0,1.3):0,q=live?P.squish:0;
-  windG.gain.setTargetAtTime(f*f*.12,t,.06);windF.frequency.setTargetAtTime(280+f*1500,t,.06);   // the "whooop"
+  windG.gain.setTargetAtTime(f*f*WIND.vol,t,.08);windF.frequency.setTargetAtTime(WIND.low+f*WIND.rise,t,.08);   // the "whooop"
   sqG.gain.setTargetAtTime(q>.05?q*.08:0,t,.03);sqO.frequency.setTargetAtTime(80+q*240,t,.03);   // the squeeze creaks
 }
