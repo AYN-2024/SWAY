@@ -80,10 +80,11 @@ function hurt(){
   hud();
 }
 
-/* Super: a blast that clears the space around you, then a couple of seconds where everything you touch pops. */
+/* Super: one blast that clears the space around you, and half a second where nothing can squeeze you. Nothing after that.
+   Green means ready, and only that. */
 function fireSuper(){
   const p=P;if(!p.ready){if(R.i>0&&p.dust>0)sfx.ui();return;}
-  p.ready=false;p.dust=0;p.superT=140;p.squish=p.sqMax=0;p.shoved=0;slow=.4;slowT=16;shake=18;buzz(30);sfx.boom();
+  p.ready=false;p.dust=0;p.superT=0;p.inv=Math.max(p.inv,30);p.squish=p.sqMax=0;p.shoved=0;slow=.4;slowT=16;shake=18;buzz(30);sfx.boom();
   save.hints.sup=1;store();if(hint.s==='Double-tap')hint.t=0;
   ringFx(p.x,p.y,COL.green,20,230,30,9);
   for(const e of E.slice()){const dx=e.x-p.x,dy=e.y-p.y,d=hyp(dx,dy)||1;
