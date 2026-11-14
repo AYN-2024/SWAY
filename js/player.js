@@ -54,7 +54,7 @@ function chainUp(){
   if(p.chain>2)word(p.x,p.y-p.r-16,'x'+p.chain,COL.amber,15+Math.min(p.chain,14),36);
 }
 function gainDust(){
-  const p=P;if(R.i<1||p.dust>=SUPER_COST)return;         // room 1 has no Super yet
+  const p=P;if(R.i<1||p.dust>=SUPER_COST||p.superT>0)return;   // room 1 has no Super yet. Dust swept up during Super is spent: Super never refills itself
   p.dust++;sfx.dust(p.dust);
   if(p.dust>=SUPER_COST){p.ready=true;sfx.ready();ringFx(p.x,p.y,COL.green,10,70,24,4);if(!save.hints.sup)say('Double-tap',600);}
 }
