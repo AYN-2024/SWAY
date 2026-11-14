@@ -39,7 +39,7 @@ function playerWalls(){
 function wallHit(nx,ny,vn){                              // (nx,ny) points back into the room, vn is the speed into the wall
   const p=P;if(vn<=0)return false;
   if(R.cleared){
-    if(p.top&&vn>=6){gongNow(nx,ny);return true;}
+    if(p.top&&vn>3){gongNow(nx,ny);return true;}                 // glowing: any touch that bounces rings it. Only a graze does not
     if(vn>3&&p.bonkT<=0){p.bonkT=20;sfx.dud();ringFx(p.x,p.y,COL.amber,6,46,16,3);if(++R.duds>1)say('Faster',120);}
   }
   if(nx)p.vx=-p.vx*MOVE.rebound;else p.vy=-p.vy*MOVE.rebound;
@@ -47,7 +47,11 @@ function wallHit(nx,ny,vn){                              // (nx,ny) points back 
   return false;
 }
 
-function endChain(){if(P.chain>R.best)R.best=P.chain;P.chain=0;}
+function endChain(){
+  const p=P;if(p.chain>R.best)R.best=p.chain;
+  if(p.chain>2)word(p.x,p.y+p.r+26>BB-12?p.y-p.r-16:p.y+p.r+26,'x'+p.chain,COL.muted,15+Math.min(p.chain,14),40);   // a chain that ends says so once, in grey, under the comet (over it at the bottom wall). Amber = alive, grey = over
+  p.chain=0;
+}
 function chainUp(){
   const p=P;p.chain++;if(p.chain>R.best)R.best=p.chain;
   if(p.chain>2)word(p.x,p.y-p.r-16,'x'+p.chain,COL.amber,15+Math.min(p.chain,14),36);

@@ -90,7 +90,6 @@ function drawEnemy(e){
   const c=ctx,T=TY[e.type],p=P,age=tick-e.born,sc=age<14?ease(age/14):1,r=e.r*(1+e.pulse*.14),wob=1+Math.sin((tick+e.ph)*.12)*.035;
   let dx=p.x-e.x,dy=p.y-e.y;const d=hyp(dx,dy)||1;dx/=d;dy/=d;
   c.save();c.translate(e.x+(e.type==='d'&&e.mode===1?(Math.random()-.5)*4:0),e.y);c.scale(sc*wob,sc/wob);
-  c.globalAlpha=.15;c.fillStyle=T.col;c.beginPath();c.arc(0,0,r*1.3,0,TAU);c.fill();c.globalAlpha=1;
   c.strokeStyle=COL.line;c.lineWidth=3;let br=r;
   if(e.type==='p'){const big=e.mode===2,tip=big?r:r*1.12;br=big?r*.7:r*.94;                        // puffer: nubs, or real spikes
     c.fillStyle=e.mode===1&&gt&4?COL.paper:T.col;c.beginPath();

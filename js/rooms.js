@@ -106,9 +106,9 @@ function launch(str){
 function gongNow(nx,ny){
   const r=R,p=P;
   if(mode==='endless'){EW++;if(EW>save.endless.best)save.endless.best=EW;save.hints.gong=1;store();r.res={e:1,n:EW,s:0};}   // Endless: one more wall, nothing else to score
-  else{const s=1|(r.hurt?0:2)|(r.best>=Math.ceil(r.popped*.75)?4:0),sv=save.rooms[r.i]||{s:0,t:0};
-    sv.s|=s;sv.t=sv.t?Math.min(sv.t,r.t):r.t;save.rooms[r.i]=sv;save.hints.gong=1;store();
-    r.res={i:r.i,s,t:r.t,best:r.best,total:r.popped};}
+  else{const s=1|(r.hurt?0:2)|(r.best>=Math.ceil(r.popped*.75)?4:0),sv=save.rooms[r.i]||{s:0};
+    sv.s|=s;delete sv.t;save.rooms[r.i]=sv;save.hints.gong=1;store();
+    r.res={i:r.i,s,best:r.best,total:r.popped};}
   freeze=12;shake=32;flash=.9;slow=.3;slowT=46;buzz(70);sfx.gong(Math.min(r.i,15));hint.t=0;
   ringFx(p.x,p.y,COL.amber,12,Math.max(W,H)*1.1,70,12);ringFx(p.x,p.y,COL.paper,12,Math.max(W,H)*.6,40,6);
   const hit=nx>0?0:nx<0?1:ny>0?2:3;
