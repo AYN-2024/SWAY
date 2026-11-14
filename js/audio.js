@@ -80,6 +80,6 @@ function audioFrame(){
   if(!AC)return;const live=state==='play'&&P&&!P.dead,t=AC.currentTime;
   const f=live?clamp(hyp(P.vx,P.vy)/MOVE.cap,0,1.3):0,q=live?P.squish:0;
   windG.gain.setTargetAtTime(f*f*WIND.vol,t,.08);windF.frequency.setTargetAtTime(WIND.low+f*WIND.rise,t,.08);   // the "whooop"
-  glowG.gain.setTargetAtTime(live&&P.top&&P.superT<=0&&!R.fin?GLOW.vol:0,t,GLOW.fade);
+  glowG.gain.setTargetAtTime(live&&P.top&&!R.fin?GLOW.vol:0,t,GLOW.fade);
   sqG.gain.setTargetAtTime(q>.05?q*.08:0,t,.03);sqO.frequency.setTargetAtTime(80+q*240,t,.03);   // the squeeze creaks
 }

@@ -74,7 +74,7 @@ function brain(e,p,pv,f,hx,hy,spd){
       if(e.mt===16){const lx=dx+p.vx*7,ly=dy+p.vy*7,l=hyp(lx,ly)||1;e.dx=lx/l;e.dy=ly/l;}       // the aim locks here; the line shows it
       if(--e.mt<=0){e.mode=2;e.mt=42;sfx.dash();}}
     else if(e.mode===2){e.vx=e.dx*9.5;e.vy=e.dy*9.5;
-      if(--e.mt<=0||e.bump){e.mode=3;e.mt=e.bump?90:55;if(e.bump){shake=Math.max(shake,7);sfx.wall(.7);puff(e.x,e.y,T.col,6,3);}}
+      if(--e.mt<=0||e.bump){e.mode=3;e.mt=e.bump?90:55;if(e.bump){shake=Math.max(shake,7);sfx.wall(.7);puff(e.x,e.y,T.col,6,3);dustAt(e.x,e.y,BAIT_DUST);}}
       return;}
     else{ax=ay=0;if(--e.mt<=0){e.mode=0;e.cd=rr(130,270);}}             // dizzy
   }else if(e.type==='h'){let da=Math.atan2(dy,dx)-e.ang;da=Math.atan2(Math.sin(da),Math.cos(da));e.ang+=clamp(da,-.03,.03);}
@@ -102,7 +102,7 @@ function contact(){
   p.x=clamp(p.x,BL+p.wr,BR-p.wr);p.y=clamp(p.y,BT+p.wr,BB-p.wr);
 }
 function canStrike(e,nx,ny){
-  const p=P;if(p.superT>0)return true;if(!p.top||e.iv>0)return false;
+  const p=P;if(!p.top||e.iv>0)return false;
   if(e.type==='p'&&e.mode===2)return false;                                       // spikes out
   if(e.type==='h'&&nx*Math.cos(e.ang)+ny*Math.sin(e.ang)>.42)return false;        // into the shield
   return true;
@@ -119,12 +119,14 @@ function strike(e,nx,ny,blast){                                                 
     puff(e.x+nx*e.r,e.y+ny*e.r,TY.b.col,18,6);ringFx(e.x,e.y,TY.b.col,e.r*.8,e.r*1.5,20,5);return;}
   pop(e);
 }
+const KIND_DUST=6;   // extra dust for popping a dasher, a puffer or a shield: the dangerous kinds pay more
+const BAIT_DUST=4;   // dust a dasher drops when its charge ends on a wall
 const TOUGH=4;   // a blob with this many rings or more takes two glowing touches
 function pop(e){
   const p=P,i=E.indexOf(e);if(i<0)return;E.splice(i,1);
   const T=TY[e.type],big=e.n>2;R.popped++;chainUp();p.over=30;                    // a pop never slows you: it gives you a kick
   freeze=Math.max(freeze,big?4:2);shake=Math.max(shake,5+e.n*2.4);buzz(big?16:8);sfx.pop(p.chain,big);
-  puff(e.x,e.y,T.col,10+e.n*5,4+e.n);ringFx(e.x,e.y,T.col,e.r*.6,e.r*1.8,18,5);dustAt(e.x,e.y,3+e.n*2);
+  puff(e.x,e.y,T.col,10+e.n*5,4+e.n);ringFx(e.x,e.y,T.col,e.r*.6,e.r*1.8,18,5);dustAt(e.x,e.y,3+e.n*2+(e.type==='d'||e.type==='p'||e.type==='h'?KIND_DUST:0));
   if(e.type==='s'){const v=hyp(p.vx,p.vy)||1,sx=-p.vy/v,sy=p.vx/v;               // two smaller ones fly out sideways
     for(const s of[-1,1]){const c=mkEnemy('b',e.x+sx*s*e.r*.5,e.y+sy*s*e.r*.5,Math.max(1,e.n-1));
       c.st=1;c.vx=sx*s*7;c.vy=sy*s*7;c.stun=26;c.iv=10;E.push(c);}}

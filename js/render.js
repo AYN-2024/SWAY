@@ -64,8 +64,6 @@ function drawRoom(){
   c.strokeStyle=r.grid;c.lineWidth=1.2;c.beginPath();
   for(let x=W/2%56;x<W;x+=56){c.moveTo(x,0);c.lineTo(x,H);}for(let y=H/2%56;y<H;y+=56){c.moveTo(0,y);c.lineTo(W,y);}c.stroke();
   if(BL>.5){c.fillStyle=COL.deep;c.fillRect(-2,-2,W+4,BT+2);c.fillRect(-2,BB,W+4,H-BB+2);c.fillRect(-2,BT,BL+2,BB-BT);c.fillRect(BR,BT,W-BR+2,BB-BT);}
-  if(r.ghost&&r.t<360){c.globalAlpha=r.intro>0?.6:.6*(1-r.t/360);c.strokeStyle=COL.amber;c.lineWidth=2.5;c.setLineDash([10,9]);   // the room you just left
-    const gs=1-.3*ease(Math.min(1,r.t/360)),gq=r.ghost;box(8,gq.x+gq.w*(1-gs)/2,gq.y+gq.h*(1-gs)/2,gq.w*gs,gq.h*gs);c.stroke();c.setLineDash([]);c.globalAlpha=1;}   // it shrinks as it fades
 }
 function drawWalls(){
   const c=ctx,r=R;if(r.fin)return;const lw=7/cam,x=BL,y=BT,w=BR-BL,h=BB-BT;box(10,x,y,w,h);
@@ -142,27 +140,27 @@ const TAIL=.5;   // half the tail's width where it meets the comet, in body radi
    Only the body swells. The dust ring stays on the floor, inside the frame. */
 const BULGE={grow:.5,throb:.12,drop:16,shade:.6};
 function drawComet(){
-  const c=ctx,p=P,v=hyp(p.vx,p.vy),sup=p.superT>0,n=p.tr.length>>1,al=p.inv>0&&tick&4?.45:1,r=p.r,fk=R.fin?R.c1/cam:1;   // fk: the comet keeps its size on screen while the camera pulls away
+  const c=ctx,p=P,v=hyp(p.vx,p.vy),n=p.tr.length>>1,al=p.inv>0&&tick&4?.45:1,r=p.r,fk=R.fin?R.c1/cam:1;   // fk: the comet keeps its size on screen while the camera pulls away
   for(let i=1;i<n;i++){const x0=p.tr[i*2-2],y0=p.tr[i*2-1],x1=p.tr[i*2],y1=p.tr[i*2+1],d=hyp(x1-x0,y1-y0);if(d<.05)continue;   // the tail: one ribbon that narrows to nothing; rainbow at full speed
     const nx=-(y1-y0)/d,ny=(x1-x0)/d,w0=r*TAIL*(i-1)/n*fk,w1=r*TAIL*i/n*fk;c.globalAlpha=i/n*.75;
-    c.fillStyle=sup?COL.green:p.top?'hsl('+((i*13+gt*9)%360)+',95%,62%)':COL.teal;
+    c.fillStyle=p.top?'hsl('+((i*13+gt*9)%360)+',95%,62%)':COL.teal;
     c.beginPath();c.moveTo(x0+nx*w0,y0+ny*w0);c.lineTo(x1+nx*w1,y1+ny*w1);c.lineTo(x1-nx*w1,y1-ny*w1);c.lineTo(x0-nx*w0,y0-ny*w0);c.closePath();c.fill();}
   if(inp.down&&inp.touch&&!R.fin){const a=aimPoint();c.globalAlpha=.3;c.strokeStyle=COL.paper;c.lineWidth=2;c.beginPath();c.arc(a.x,a.y,9,0,TAU);c.stroke();}
   const q=p.squish>.02?p.squish:0;                                       // squeezed: no bending. It swells, throbs and lifts off the floor.
   c.save();c.translate(p.x,p.y);c.scale(fk,fk);
   const b=q?1+BULGE.grow*q+(calm?0:BULGE.throb*q*Math.sin(gt*(.25+.55*q))):1;
-  const hot=sup?COL.green:p.top?'hsl('+(gt*9%360)+',95%,66%)':COL.paper;
+  const hot=p.top?'hsl('+(gt*9%360)+',95%,66%)':COL.paper;
   c.save();c.scale(1/fk,1/fk);c.translate(-p.x,-p.y);box(0,BL,BT,BR-BL,BB-BT);c.clip();c.translate(p.x,p.y);c.scale(fk,fk);   // the glow and the dust ring never cross a wall
-  if(p.top){const hr=r+18+Math.sin(gt*.4)*2,hc=a=>sup?'rgba(77,255,136,'+a+')':'hsla('+(gt*9%360)+',95%,70%,'+a+')',g=c.createRadialGradient(0,0,r*.7,0,0,hr);   // the glow: bright at the body, gone at the edge
+  if(p.top){const hr=r+18+Math.sin(gt*.4)*2,hc=a=>'hsla('+(gt*9%360)+',95%,70%,'+a+')',g=c.createRadialGradient(0,0,r*.7,0,0,hr);   // the glow: bright at the body, gone at the edge
     g.addColorStop(0,hc(.6));g.addColorStop(1,hc(0));c.globalAlpha=al;c.fillStyle=g;c.beginPath();c.arc(0,0,hr,0,TAU);c.fill();}
   c.globalAlpha=al;
-  if(R.i>0&&p.dust>0&&!sup){c.strokeStyle=p.ready?COL.green:COL.amber;c.lineWidth=p.ready?5+Math.sin(gt*.3)*1.5:4;      // the only ring: dust, filling toward Super
+  if(R.i>0&&p.dust>0){c.strokeStyle=p.ready?COL.green:COL.amber;c.lineWidth=p.ready?5+Math.sin(gt*.3)*1.5:4;      // the only ring: dust, filling toward Super
     c.beginPath();c.arc(0,0,r+7,-Math.PI/2,-Math.PI/2+TAU*p.dust/SUPER_COST);c.stroke();}
   c.restore();c.globalAlpha=al;
-  const last=p.hearts===1&&!sup,beat=calm?.5:.5+.5*Math.sin(gt*.1);                                 // the last heart: the body's outline turns coral and beats
+  const last=p.hearts===1,beat=calm?.5:.5+.5*Math.sin(gt*.1);                                 // the last heart: the body's outline turns coral and beats
   if(q){c.globalAlpha=BULGE.shade*q;c.fillStyle='#000';c.beginPath();c.arc(0,BULGE.drop*q,(r+2)*b,0,TAU);c.fill();c.globalAlpha=al;   // its shadow falls further below as it rises
     c.scale(b,b);}
-  c.fillStyle=p.ready||sup?COL.green:COL.teal;c.strokeStyle=last?COL.coral:COL.line;c.lineWidth=last?3.5+1.5*beat:3;c.beginPath();c.arc(0,0,r,0,TAU);c.fill();c.stroke();c.strokeStyle=COL.line;
+  c.fillStyle=p.ready?COL.green:COL.teal;c.strokeStyle=last?COL.coral:COL.line;c.lineWidth=last?3.5+1.5*beat:3;c.beginPath();c.arc(0,0,r,0,TAU);c.fill();c.stroke();c.strokeStyle=COL.line;
   if(q){let g=c.createRadialGradient(0,0,r*.45,0,0,r);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,'+(.5*q)+')');   // the rim falls away
     c.fillStyle=g;c.beginPath();c.arc(0,0,r-1.5,0,TAU);c.fill();
     g=c.createRadialGradient(-r*.42,-r*.58,0,-r*.42,-r*.58,r*(.25+.3*q));g.addColorStop(0,'rgba(255,255,255,'+(.6*q)+')');g.addColorStop(1,'rgba(255,255,255,0)');   // the shine of a dome

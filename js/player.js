@@ -1,7 +1,7 @@
 /* player: the comet. Drag pulls it, letting go lets it coast, glowing pops things,
    and being pinned is the only thing that ever hurts. */
 function newPlayer(x,y){
-  return{x,y,vx:0,vy:0,r:MOVE.r,tr:[],top:false,over:0,hearts:3,squish:0,pnx:0,pny:-1,inv:0,superT:0,dust:0,ready:false,
+  return{x,y,vx:0,vy:0,r:MOVE.r,tr:[],top:false,over:0,hearts:3,squish:0,pnx:0,pny:-1,inv:0,dust:0,ready:false,
     chain:0,rest:0,shoved:0,heal:0,bonkT:0,tE:0,tS:0,sqMax:0,dead:false,moved:0,maxH:3,reach:120,shoveT:0,
     wr:MOVE.r};     // walls stop the body. The dust ring and the glow are cut off at the wall line when they are drawn.
 }
@@ -11,7 +11,7 @@ function aimPoint(){const lift=inp.touch?Math.min(92,VH*.13):0;return{x:(inp.sx-
 function playerTick(){
   const p=P;
   if(R.fin){p.x+=p.vx;p.y+=p.vy;p.tr.push(p.x,p.y);if(p.tr.length>52)p.tr.splice(0,2);return;}   // out: nothing holds it any more
-  const sup=p.superT>0,cap=MOVE.cap*(sup?1.25:p.over>0?1.1:1),drive=MOVE.drive*(sup?1.3:p.over>0?1.2:1),k=inp.keys;
+  const cap=MOVE.cap*(p.over>0?1.1:1),drive=MOVE.drive*(p.over>0?1.2:1),k=inp.keys;
   let ix=0,iy=0;
   if(k.has('ArrowLeft')||k.has('KeyA'))ix--;if(k.has('ArrowRight')||k.has('KeyD'))ix++;
   if(k.has('ArrowUp')||k.has('KeyW'))iy--;if(k.has('ArrowDown')||k.has('KeyS'))iy++;
@@ -22,8 +22,7 @@ function playerTick(){
   let v=hyp(p.vx,p.vy);if(v>cap){p.vx*=cap/v;p.vy*=cap/v;v=cap;}
   p.x+=p.vx;p.y+=p.vy;p.moved+=v;
   if(p.over>0)p.over--;if(p.inv>0)p.inv--;if(p.shoved>0)p.shoved--;if(p.bonkT>0)p.bonkT--;if(p.shoveT>0)p.shoveT--;
-  if(sup&&--p.superT===0)p.inv=Math.max(p.inv,30);
-  p.top=sup||(v>=TOP-1e-6&&p.shoved<=0);                 // speed you were handed by a shove does not count
+  p.top=v>=TOP-1e-6&&p.shoved<=0;                 // speed you were handed by a shove does not count
   if(v<.6){if(++p.rest>24)endChain();}else p.rest=0;     // a chain lives while the comet moves and dies when it rests
   if(playerWalls())return;                               // true when the wall just rang: a new room has taken over
   p.tr.push(p.x,p.y);if(p.tr.length>52)p.tr.splice(0,2);
@@ -54,7 +53,7 @@ function chainUp(){
   if(p.chain>2)word(p.x,p.y-p.r-16,'x'+p.chain,COL.amber,15+Math.min(p.chain,14),36);
 }
 function gainDust(){
-  const p=P;if(R.i<1||p.dust>=SUPER_COST||p.superT>0)return;   // room 1 has no Super yet. Dust swept up during Super is spent: Super never refills itself
+  const p=P;if(R.i<1||p.dust>=SUPER_COST)return;   // room 1 has no Super yet
   p.dust++;sfx.dust(p.dust);
   if(p.dust>=SUPER_COST){p.ready=true;sfx.ready();ringFx(p.x,p.y,COL.green,10,70,24,4);if(!save.hints.sup)say('Double-tap',600);}
 }
@@ -62,7 +61,7 @@ function gainDust(){
 /* The squeeze, as in the original: pinned = touching two bodies, or one body and something solid.
    The meter fills in 45 ticks while pinned and empties in 20 once free. Full = one heart. */
 function squeezeTick(){
-  const p=P;if(p.superT>0||p.inv>0){p.squish=Math.max(0,p.squish-.05);return;}
+  const p=P;if(p.inv>0){p.squish=Math.max(0,p.squish-.05);return;}
   const wall=p.x<=BL+p.wr+1.5||p.x>=BR-p.wr-1.5||p.y<=BT+p.wr+1.5||p.y>=BB-p.wr-1.5;
   const pinned=p.tE>=2||(p.tE>=1&&(wall||p.tS>0));
   p.squish=pinned?Math.min(1,p.squish+1/45):Math.max(0,p.squish-1/20);
@@ -84,7 +83,7 @@ function hurt(){
    Green means ready, and only that. */
 function fireSuper(){
   const p=P;if(!p.ready){if(R.i>0&&p.dust>0)sfx.ui();return;}
-  p.ready=false;p.dust=0;p.superT=0;p.inv=Math.max(p.inv,30);p.squish=p.sqMax=0;p.shoved=0;slow=.4;slowT=16;shake=18;buzz(30);sfx.boom();
+  p.ready=false;p.dust=0;p.inv=Math.max(p.inv,30);p.squish=p.sqMax=0;p.shoved=0;slow=.4;slowT=16;shake=18;buzz(30);sfx.boom();
   save.hints.sup=1;store();if(hint.s==='Double-tap')hint.t=0;
   ringFx(p.x,p.y,COL.green,20,230,30,9);
   for(const e of E.slice()){const dx=e.x-p.x,dy=e.y-p.y,d=hyp(dx,dy)||1;
