@@ -57,7 +57,7 @@ function startRoom(i,carry){
   W=s.w;H=s.h;BL=BT=0;BR=W;BB=H;E.length=IN.length=ST.length=0;
   if(carry)for(const q of PT.concat(DU,FL)){q.x+=ox;q.y+=oy;}else PT.length=DU.length=FL.length=0;
   P=newPlayer(W/2,H*.72);
-  if(carry){P.x=prev.x+ox;P.y=prev.y+oy;P.vx=prev.vx;P.vy=prev.vy;P.over=30;P.heard=prev.heard;P.tr=prev.tr.map((v,k)=>v+(k&1?oy:ox));
+  if(carry){P.x=prev.x+ox;P.y=prev.y+oy;P.vx=prev.vx;P.vy=prev.vy;P.over=30;P.tr=prev.tr.map((v,k)=>v+(k&1?oy:ox));
     if(mode==='endless')for(const k of['hearts','maxH','reach','dust','ready','chain','heal','inv','superT'])P[k]=prev[k];   // Endless: nothing refills at the wall
     else for(const k of['hearts','heal'])P[k]=prev[k];}                                                               // the rooms: hearts carry through the wall. Only a retry refills them.
   else if(mode==='endless'){const k=perks();if(k.heart)P.hearts=P.maxH=4;if(k.sup){P.dust=SUPER_COST;P.ready=true;}if(k.dust)P.reach=240;}   // what the stars bought

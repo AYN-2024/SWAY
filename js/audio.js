@@ -1,6 +1,6 @@
 /* audio: everything is synthesised, there is nothing to download.
    Pops climb a scale with the chain, the wind follows your speed, and the wall is the gong. */
-let AC=null,master=null,noiseBuf=null,windG=null,windF=null,sqG=null,sqO=null,chimeT=0;
+let AC=null,master=null,noiseBuf=null,windG=null,windF=null,sqG=null,sqO=null,glowG=null,chimeT=0;
 
 function audioOn(){
   if(AC){if(AC.state==='suspended')AC.resume();return;}
@@ -13,6 +13,8 @@ function audioOn(){
   const src=AC.createBufferSource();src.buffer=noiseBuf;src.loop=true;
   windF=AC.createBiquadFilter();windF.type='bandpass';windF.Q.value=1.1;
   windG=AC.createGain();windG.gain.value=0;src.connect(windF);windF.connect(windG);windG.connect(master);src.start();
+  glowG=AC.createGain();glowG.gain.value=0;glowG.connect(master);                                  // glow: two soft sines a fifth apart, held
+  for(const f of GLOW.notes){const o=AC.createOscillator();o.type='sine';o.frequency.value=f;o.connect(glowG);o.start();}
   sqO=AC.createOscillator();sqO.type='sawtooth';sqO.frequency.value=90;sqG=AC.createGain();sqG.gain.value=0;
   const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=800;
   sqO.connect(lp);lp.connect(sqG);sqG.connect(master);sqO.start();
@@ -34,6 +36,8 @@ function hiss(dur,vol,freq,when){
 
 /* The wind that follows your speed. vol = how loud at top speed, low and rise = how dark it starts and how far it climbs (Hz). */
 const WIND={vol:.035,low:200,rise:650};
+/* The sound of glowing: a held tone, no attack. vol = how loud, fade = seconds to come in and go out, notes = the two pitches (Hz). */
+const GLOW={vol:.028,fade:.18,notes:[294,441]};
 const SCALE=[0,2,4,7,9];
 const sfx={
   pop(chain,big){
@@ -56,8 +60,6 @@ const sfx={
   hurt(){tone(330,.32,'square',.15,104);hiss(.25,.22,380);},
   heal(){tone(660,.1,'sine',.12);tone(990,.18,'sine',.12,0,.09);},
   clear(){[392,494,587].forEach((f,i)=>tone(f,.3,'triangle',.12,0,i*.07));},
-  glowOn(){tone(660,.12,'triangle',.1,990);},
-  glowOff(){tone(520,.14,'triangle',.08,300);},
   dud(){tone(118,.2,'sine',.22,84);hiss(.05,.1,280);},
   star(i){tone(784*Math.pow(1.26,i),.22,'triangle',.14);},
   ui(){tone(540,.05,'triangle',.07);},
@@ -78,5 +80,6 @@ function audioFrame(){
   if(!AC)return;const live=state==='play'&&P&&!P.dead,t=AC.currentTime;
   const f=live?clamp(hyp(P.vx,P.vy)/MOVE.cap,0,1.3):0,q=live?P.squish:0;
   windG.gain.setTargetAtTime(f*f*WIND.vol,t,.08);windF.frequency.setTargetAtTime(WIND.low+f*WIND.rise,t,.08);   // the "whooop"
+  glowG.gain.setTargetAtTime(live&&P.top&&!R.fin?GLOW.vol:0,t,GLOW.fade);
   sqG.gain.setTargetAtTime(q>.05?q*.08:0,t,.03);sqO.frequency.setTargetAtTime(80+q*240,t,.03);   // the squeeze creaks
 }

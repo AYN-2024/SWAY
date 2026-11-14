@@ -2,7 +2,7 @@
    and being pinned is the only thing that ever hurts. */
 function newPlayer(x,y){
   return{x,y,vx:0,vy:0,r:MOVE.r,tr:[],top:false,over:0,hearts:3,squish:0,pnx:0,pny:-1,inv:0,superT:0,dust:0,ready:false,
-    chain:0,rest:0,heard:false,glowS:0,sq:0,sqA:0,sqN:0,shoved:0,heal:0,bonkT:0,tE:0,tS:0,sqMax:0,dead:false,moved:0,maxH:3,reach:120,shoveT:0,
+    chain:0,rest:0,sq:0,sqA:0,sqN:0,shoved:0,heal:0,bonkT:0,tE:0,tS:0,sqMax:0,dead:false,moved:0,maxH:3,reach:120,shoveT:0,
     wr:MOVE.r};     // walls stop the body. The dust ring and the glow are cut off at the wall line when they are drawn.
 }
 /* A hit flattens the comet against what it hit for a moment. Picture only. amount = how flat at top speed, ticks = how long. */
@@ -27,8 +27,6 @@ function playerTick(){
   if(p.sq>0)p.sq--;if(p.over>0)p.over--;if(p.inv>0)p.inv--;if(p.shoved>0)p.shoved--;if(p.bonkT>0)p.bonkT--;if(p.shoveT>0)p.shoveT--;
   if(sup&&--p.superT===0)p.inv=Math.max(p.inv,30);
   p.top=sup||(v>=TOP-1e-6&&p.shoved<=0);                 // speed you were handed by a shove does not count
-  if(p.glowS>0)p.glowS--;                               // glow is heard: a note up when it starts, a note down when it ends, never more than five a second
-  if(sup)p.heard=true;else if(p.top!==p.heard&&p.glowS<=0){p.heard=p.top;p.glowS=12;if(p.top)sfx.glowOn();else sfx.glowOff();}
   if(v<.6){if(++p.rest>24)endChain();}else p.rest=0;     // a chain lives while the comet moves and dies when it rests
   if(playerWalls())return;                               // true when the wall just rang: a new room has taken over
   p.tr.push(p.x,p.y);if(p.tr.length>52)p.tr.splice(0,2);
