@@ -111,13 +111,13 @@ function drawEnemy(e){
   c.restore();
 }
 /* The shine on a puffer's spikes: white sparkles that pop on one tip, then on another, for as long as the spikes are out.
-   Two at a time, half a beat apart and on opposite sides, so one is always showing.
+   Two at a time, half a beat apart and never on neighbouring tips, so one is always showing.
    Edit to taste: count = how many, every = ticks per sparkle, size = how big against the body (min and max in units), hop = how many tips it jumps. */
 const SHINE={count:2,every:22,size:.42,min:11,max:20,hop:5};
 function shine(e,r){
   const c=ctx,big=clamp(r*SHINE.size,SHINE.min,SHINE.max);
   for(let j=0;j<SHINE.count;j++){
-    const t=gt+j*SHINE.every/SHINE.count,k=((t/SHINE.every|0)*SHINE.hop+j*6)%12,a=k*TAU/12+e.ph,z=big*Math.sin((calm?.5:t%SHINE.every/SHINE.every)*Math.PI);
+    const t=gt+j*SHINE.every/SHINE.count,k=((t/SHINE.every|0)*SHINE.hop+j*4)%12,a=k*TAU/12+e.ph,z=big*Math.sin((calm?.5:t%SHINE.every/SHINE.every)*Math.PI);
     if(z<1)continue;c.save();c.translate(Math.cos(a)*r*.93,Math.sin(a)*r*.93);c.beginPath();
     for(let i=0;i<8;i++){const b=i*TAU/8,q=i&1?z*.3:z;c.lineTo(Math.cos(b)*q,Math.sin(b)*q);}
     c.closePath();c.fillStyle=COL.paper;c.strokeStyle=COL.line;c.lineWidth=1.5;c.fill();c.stroke();c.restore();}
