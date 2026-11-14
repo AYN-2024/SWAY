@@ -110,14 +110,17 @@ function drawEnemy(e){
   if(p.dead&&tick-e.crown<600)crown(br);
   c.restore();
 }
-/* The shine on a puffer's spikes: a white sparkle that pops on one tip, then on another, for as long as the spikes are out.
-   Edit to taste: every = ticks per sparkle, size = how big against the body (min and max in units), hop = how many tips it jumps. */
-const SHINE={every:22,size:.42,min:11,max:20,hop:5};
+/* The shine on a puffer's spikes: white sparkles that pop on one tip, then on another, for as long as the spikes are out.
+   Two at a time, half a beat apart and on opposite sides, so one is always showing.
+   Edit to taste: count = how many, every = ticks per sparkle, size = how big against the body (min and max in units), hop = how many tips it jumps. */
+const SHINE={count:2,every:22,size:.42,min:11,max:20,hop:5};
 function shine(e,r){
-  const c=ctx,k=(gt/SHINE.every|0)*SHINE.hop%12,a=k*TAU/12+e.ph,ph=calm?.5:gt%SHINE.every/SHINE.every,z=clamp(r*SHINE.size,SHINE.min,SHINE.max)*Math.sin(ph*Math.PI);
-  if(z<1)return;c.save();c.translate(Math.cos(a)*r*.93,Math.sin(a)*r*.93);c.beginPath();
-  for(let i=0;i<8;i++){const b=i*TAU/8,q=i&1?z*.3:z;c.lineTo(Math.cos(b)*q,Math.sin(b)*q);}
-  c.closePath();c.fillStyle=COL.paper;c.strokeStyle=COL.line;c.lineWidth=1.5;c.fill();c.stroke();c.restore();
+  const c=ctx,big=clamp(r*SHINE.size,SHINE.min,SHINE.max);
+  for(let j=0;j<SHINE.count;j++){
+    const t=gt+j*SHINE.every/SHINE.count,k=((t/SHINE.every|0)*SHINE.hop+j*6)%12,a=k*TAU/12+e.ph,z=big*Math.sin((calm?.5:t%SHINE.every/SHINE.every)*Math.PI);
+    if(z<1)continue;c.save();c.translate(Math.cos(a)*r*.93,Math.sin(a)*r*.93);c.beginPath();
+    for(let i=0;i<8;i++){const b=i*TAU/8,q=i&1?z*.3:z;c.lineTo(Math.cos(b)*q,Math.sin(b)*q);}
+    c.closePath();c.fillStyle=COL.paper;c.strokeStyle=COL.line;c.lineWidth=1.5;c.fill();c.stroke();c.restore();}
 }
 function face(e,dx,dy,f){
   const c=ctx,ex=f*.44,ey=-f*.1,scared=e.fear>.3,er=f*(scared?.4:.32),smug=!P.top&&!P.dead&&hyp(P.vx,P.vy)<MOVE.cap*.4;
