@@ -6,8 +6,8 @@
 const ROOMS=[
   // 1-5: everything the old ten rooms taught, at twice the pace. The giant is the middle of the game now.
   {name:'First pop',zoom:1,grow:8,max:3,sp:.7,waves:[[0,'z1@.5,.3'],[999,'z1@.24,.52 z1@.76,.52'],[999,'b1 b1'],[6,'b1 b2 b1'],[7,'b2 b1 b1']]},
-  {name:'Split and rush',zoom:.985,grow:6.5,max:10,sp:.85,waves:[[0,'s2 b1 b1'],[7,'d1 b1 b1'],[7,'s2 d1 b2'],[7,'d1 s2 b2 b1']]},
-  {name:'Spikes and shields',zoom:.97,grow:6,max:10,waves:[[0,'p1 b1 b1'],[6,'h1 b2 b1'],[7,'p2 h1 b2'],[7,'h1 p1 s2 d1']]},
+  {name:'Split and rush',zoom:.985,grow:6.5,max:10,sp:.85,waves:[[0,'s2 b1 b1 b1'],[7,'d1 b1 b1 b2'],[7,'s2 d1 b2 b1'],[7,'d1 s2 b2 b1 b1']]},
+  {name:'Spikes and shields',zoom:.97,grow:6,max:10,waves:[[0,'p1 b1 b1 b1'],[6,'h1 b2 b1 b2'],[7,'p2 h1 b2 b1'],[7,'h1 p1 s2 d1 b2']]},
   {name:'The walls',zoom:.955,grow:5,max:10,sp:1.2,shrink:[.18,58],
     waves:[[0,'b2 b1 b1 s2 b2'],[5,'d1 b2 b2 h1 b2'],[5,'s2 b1 p1 b2 b2'],[5,'b3 d1 s2 b1 b2'],[5,'h2 b2 d1 b2']]},
   {name:'The giant',zoom:.94,grow:5,max:10,sp:1.2,waves:[[0,'G6@.5,.28'],[8,'d1 h1 b2 b2'],[10,'p1 d1 b2 b2'],[10,'h2 d1 s2 b2'],[10,'d1 d1 b3 b2']]},
@@ -16,7 +16,7 @@ const ROOMS=[
     waves:[[0,'b2 b1 b1 b2'],[6,'s2 b2 d1 p1'],[7,'B2 b1 h1'],[5,'b2 b1 b2 d1 p1']]},
   {name:'Crowd',zoom:.905,grow:4.5,max:10,sp:1.25,stones:[[.3,.3],[.7,.3],[.5,.5],[.3,.7],[.7,.7]],
     waves:[[0,'b2 b1 b2 s2 d1'],[5,'h1 b2 b2 p1 b1'],[6,'s3 d1 b3 b1 h2'],[6,'B2 b2 b1 s2 p2'],[6,'d1 d1 b3 b2 h1']]},
-  {name:'Twins',zoom:.89,grow:5,max:10,sp:1.2,waves:[[0,'B2 B2 b1'],[6,'h1 h1 b2 d1'],[6,'B3 s2 p1 b2'],[6,'d1 d1 h2 b2 b1']]},
+  {name:'Twins',zoom:.89,grow:5,max:10,sp:1.2,waves:[[0,'B2 B2 b1 b2'],[6,'h1 h1 b2 d1 b2'],[6,'B3 s2 p1 b2 b2'],[6,'d1 d1 h2 b2 b1 b2']]},
   {name:'The vise',zoom:.875,grow:4.5,max:10,sp:1.25,shrink:[.2,45],
     waves:[[0,'b2 b2 s2 d1 h1'],[5,'p1 b2 b2 d1 b1'],[5,'s3 h1 b2 p1 b2'],[5,'B2 d1 s2 b2 h1'],[5,'d1 d1 b3 h2 b2']]},
   {name:'The giant returns',zoom:.86,grow:4.5,max:10,sp:1.3,waves:[[0,'G9@.5,.28'],[8,'B2 d1 h1 b2'],[9,'p1 d1 b2 h1'],[9,'h2 d1 s2 b2 B2'],[9,'d1 d1 b3 p2']]},

@@ -113,7 +113,7 @@ function strike(e,nx,ny,blast){                                                 
     if(!blast){const vn=p.vx*nx+p.vy*ny;if(vn<0){p.vx-=1.8*vn*nx;p.vy-=1.8*vn*ny;}p.x=e.x+nx*(e.r+p.r+1);p.y=e.y+ny*(e.r+p.r+1);}
     freeze=Math.max(freeze,5);shake=Math.max(shake,15);buzz(20);sfx.peel();
     puff(e.x+nx*e.r,e.y+ny*e.r,COL.paper,16,6);ringFx(e.x,e.y,COL.paper,e.r*.8,e.r*1.5,20,5);return;}
-  if(!blast&&e.type==='b'&&e.n>=TOUGH&&!e.cut){e.cut=1;e.n=Math.ceil(e.n/2);e.pulse=1;e.stun=30;e.iv=34;e.vx-=nx*3;e.vy-=ny*3;chainUp();
+  if(!blast&&e.type==='b'&&e.n>=TOUGH&&!e.cut){e.cut=1;e.n=Math.ceil(e.n/2);e.pulse=0;e.stun=30;e.iv=34;e.vx-=nx*3;e.vy-=ny*3;chainUp();
     const vn=p.vx*nx+p.vy*ny;if(vn<0){p.vx-=1.8*vn*nx;p.vy-=1.8*vn*ny;}p.x=e.x+nx*(e.r+p.r+1);p.y=e.y+ny*(e.r+p.r+1);
     freeze=Math.max(freeze,5);shake=Math.max(shake,13);buzz(20);sfx.peel();dustAt(e.x,e.y,4);
     puff(e.x+nx*e.r,e.y+ny*e.r,TY.b.col,18,6);ringFx(e.x,e.y,TY.b.col,e.r*.8,e.r*1.5,20,5);return;}
