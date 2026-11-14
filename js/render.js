@@ -137,8 +137,9 @@ function crown(r){                                                      // whoev
   c.closePath();c.fill();c.stroke();
 }
 
-/* The squeeze picture. Edit to taste: grow = how much bigger at a full meter, throb = the pulse, drop = how far the shadow falls. */
-const BULGE={grow:.5,throb:.05,drop:9};
+/* The squeeze picture. Edit to taste: grow = how much bigger at a full meter, throb = the pulse, drop = how far the shadow falls, shade = how dark it is.
+   Only the body swells. The white ring and the dust ring stay on the floor, inside the frame. */
+const BULGE={grow:.5,throb:.12,drop:16,shade:.6};
 function drawComet(){
   const c=ctx,p=P,v=hyp(p.vx,p.vy),sup=p.superT>0,n=p.tr.length>>1,al=p.inv>0&&tick&4?.45:1,r=p.r,fk=R.fin?R.c1/cam:1;   // fk: the comet keeps its size on screen while the camera pulls away
   c.lineCap='round';
@@ -149,15 +150,16 @@ function drawComet(){
   if(inp.down&&inp.touch&&!R.fin){const a=aimPoint();c.globalAlpha=.3;c.strokeStyle=COL.paper;c.lineWidth=2;c.beginPath();c.arc(a.x,a.y,9,0,TAU);c.stroke();}
   const q=p.squish>.02?p.squish:0;                                       // squeezed: no bending. It swells, throbs and lifts off the floor.
   c.save();c.translate(p.x,p.y);c.scale(fk,fk);
-  if(q){const b=1+BULGE.grow*q+(calm?0:BULGE.throb*q*Math.sin(gt*(.25+.55*q)));
-    c.globalAlpha=.4*q;c.fillStyle='#000';c.beginPath();c.arc(0,BULGE.drop*q,(r+7)*b,0,TAU);c.fill();c.globalAlpha=1;   // its shadow falls further below as it rises
-    c.scale(b,b);}
-  else if(v>1){const a=Math.atan2(p.vy,p.vx),s=1+Math.min(v/MOVE.cap,1.2)*.1;c.rotate(a);c.scale(s,1/s);c.rotate(-a);}
+  const b=q?1+BULGE.grow*q+(calm?0:BULGE.throb*q*Math.sin(gt*(.25+.55*q))):1;
+  if(!q&&v>1){const a=Math.atan2(p.vy,p.vx),s=1+Math.min(v/MOVE.cap,1.2)*.1;c.rotate(a);c.scale(s,1/s);c.rotate(-a);}
   const hot=sup?COL.green:p.top?'hsl('+(gt*9%360)+',95%,66%)':COL.paper;
   if(p.top){c.globalAlpha=al*.25;c.fillStyle=hot;c.beginPath();c.arc(0,0,r+11+Math.sin(gt*.4)*2,0,TAU);c.fill();}
-  c.globalAlpha=al;c.strokeStyle=hot;c.lineWidth=3.5;c.beginPath();c.arc(0,0,r+5,0,TAU);c.stroke();
+  const last=p.hearts===1&&!sup,beat=calm?.5:.5+.5*Math.sin(gt*.1);                                 // the last heart: the ring turns coral and beats
+  c.globalAlpha=last?al*(.6+.4*beat):al;c.strokeStyle=last?COL.coral:hot;c.lineWidth=last?3.5+beat:3.5;c.beginPath();c.arc(0,0,r+5,0,TAU);c.stroke();c.globalAlpha=al;
   if(R.i>0&&p.dust>0&&!sup){c.strokeStyle=p.ready?COL.green:COL.amber;c.lineWidth=p.ready?5+Math.sin(gt*.3)*1.5:4;      // dust fills a ring around you
     c.beginPath();c.arc(0,0,r+11,-Math.PI/2,-Math.PI/2+TAU*p.dust/SUPER_COST);c.stroke();}
+  if(q){c.globalAlpha=BULGE.shade*q;c.fillStyle='#000';c.beginPath();c.arc(0,BULGE.drop*q,(r+2)*b,0,TAU);c.fill();c.globalAlpha=al;   // its shadow falls further below as it rises
+    c.scale(b,b);}
   c.fillStyle=p.ready||sup?COL.green:COL.teal;c.strokeStyle=COL.line;c.lineWidth=3;c.beginPath();c.arc(0,0,r,0,TAU);c.fill();c.stroke();
   if(q){let g=c.createRadialGradient(0,0,r*.45,0,0,r);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,'+(.5*q)+')');   // the rim falls away
     c.fillStyle=g;c.beginPath();c.arc(0,0,r-1.5,0,TAU);c.fill();
