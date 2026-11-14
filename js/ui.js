@@ -73,15 +73,19 @@ function frame(t){
 /* Input: one thumb. Drag to fly, let go to coast, double-tap for Super. */
 cv.addEventListener('pointerdown',e=>{
   if(state!=='play')return;e.preventDefault();audioOn();
-  if(inp.down&&e.pointerId!==inp.pid){inp.sup=true;return;}                              // a second finger fires Super too
+  if(inp.down&&e.pointerId!==inp.pid){inp.sup=true;inp.pid2=e.pointerId;inp.sx2=e.clientX;inp.sy2=e.clientY;return;}   // a second finger fires Super too, and waits to take over
   const now=performance.now();
   if(now-inp.tapT<300&&hyp(e.clientX-inp.tapX,e.clientY-inp.tapY)<60)inp.sup=true;       // double-tap
   inp.tapT=now;inp.tapX=e.clientX;inp.tapY=e.clientY;
-  inp.down=true;inp.touch=e.pointerType==='touch';inp.pid=e.pointerId;inp.sx=e.clientX;inp.sy=e.clientY;
+  inp.down=true;inp.pid2=-1;inp.touch=e.pointerType==='touch';inp.pid=e.pointerId;inp.sx=e.clientX;inp.sy=e.clientY;
   try{cv.setPointerCapture(e.pointerId);}catch(_){}
 });
-addEventListener('pointermove',e=>{if(inp.down&&e.pointerId===inp.pid){inp.sx=e.clientX;inp.sy=e.clientY;}});
-const lift=e=>{if(e.pointerId===inp.pid)inp.down=false;};
+addEventListener('pointermove',e=>{if(!inp.down)return;if(e.pointerId===inp.pid){inp.sx=e.clientX;inp.sy=e.clientY;}else if(e.pointerId===inp.pid2){inp.sx2=e.clientX;inp.sy2=e.clientY;}});
+const lift=e=>{
+  if(e.pointerId===inp.pid2){inp.pid2=-1;return;}
+  if(e.pointerId!==inp.pid)return;
+  if(inp.pid2>=0){inp.pid=inp.pid2;inp.sx=inp.sx2;inp.sy=inp.sy2;inp.pid2=-1;}   // changing thumbs: the one still on the glass steers
+  else inp.down=false;};
 addEventListener('pointerup',lift);addEventListener('pointercancel',lift);
 addEventListener('keydown',e=>{
   if(e.code==='Space'){if(state==='play'){inp.sup=true;e.preventDefault();}return;}

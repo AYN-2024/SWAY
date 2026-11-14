@@ -27,7 +27,7 @@ let state='title';                           // title | play | pause | dead | en
 let P=null,R=null;                           // the comet, the current room
 const E=[],ST=[],IN=[];                      // enemies, stones, arrivals on their way in
 let tick=0,gt=0,freeze=0,slow=1,slowT=0,shake=0,flash=0;
-const inp={down:false,sx:0,sy:0,touch:false,pid:-1,keys:new Set(),tapT:0,tapX:0,tapY:0,sup:false};
+const inp={down:false,sx:0,sy:0,touch:false,pid:-1,keys:new Set(),tapT:0,tapX:0,tapY:0,sup:false,pid2:-1,sx2:0,sy2:0};
 const hint={s:'',t:0};
 function say(s,t){hint.s=s;hint.t=t||150;}
 
