@@ -300,6 +300,9 @@ func _ready() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--trace"):
 			test_fixed_size = true       # compare against the web build at one known screen size
+	if OS.has_feature("web") or OS.has_feature("mobile"):
+		# phones report several real pixels per point; work in points so sizes match the web build
+		get_window().content_scale_factor = maxf(1.0, DisplayServer.screen_get_scale())
 	_load()
 	_layout()
 	view = ViewScript.new()
