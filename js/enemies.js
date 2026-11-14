@@ -99,7 +99,7 @@ function contact(){
     const nx=dx/d,ny=dy/d;
     if(d<m){if(canStrike(e,nx,ny)){strike(e,nx,ny,false);if(E[i]!==e)continue;}else bumpInto(e,nx,ny,m-d);}
     if(e.type!=='z'){p.tE++;p.pnx=nx;p.pny=ny;}}            // a sleeper cannot pin you
-  p.x=clamp(p.x,BL+p.r,BR-p.r);p.y=clamp(p.y,BT+p.r,BB-p.r);
+  p.x=clamp(p.x,BL+p.wr,BR-p.wr);p.y=clamp(p.y,BT+p.wr,BB-p.wr);
 }
 function canStrike(e,nx,ny){
   const p=P;if(p.superT>0)return true;if(!p.top||e.iv>0)return false;

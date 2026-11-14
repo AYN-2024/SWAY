@@ -2,7 +2,8 @@
    and being pinned is the only thing that ever hurts. */
 function newPlayer(x,y){
   return{x,y,vx:0,vy:0,r:MOVE.r,tr:[],top:false,over:0,hearts:3,squish:0,pnx:0,pny:-1,inv:0,superT:0,dust:0,ready:false,
-    chain:0,rest:0,shoved:0,heal:0,bonkT:0,tE:0,tS:0,sqMax:0,dead:false,moved:0,maxH:3,reach:120,shoveT:0};
+    chain:0,rest:0,shoved:0,heal:0,bonkT:0,tE:0,tS:0,sqMax:0,dead:false,moved:0,maxH:3,reach:120,shoveT:0,
+    wr:MOVE.r+7};   // walls stop the white ring (its outer edge), not the body, so the ring never crosses the frame
 }
 /* On touch the aim sits above the thumb, never under it. */
 function aimPoint(){const lift=inp.touch?Math.min(92,VH*.13):0;return{x:(inp.sx-OX)/cam,y:(inp.sy-lift-OY)/cam};}
@@ -30,10 +31,10 @@ function playerTick(){
 
 function playerWalls(){
   const p=P;
-  if(p.x<BL+p.r){if(wallHit(1,0,-p.vx))return true;p.x=BL+p.r;}
-  else if(p.x>BR-p.r){if(wallHit(-1,0,p.vx))return true;p.x=BR-p.r;}
-  if(p.y<BT+p.r){if(wallHit(0,1,-p.vy))return true;p.y=BT+p.r;}
-  else if(p.y>BB-p.r){if(wallHit(0,-1,p.vy))return true;p.y=BB-p.r;}
+  if(p.x<BL+p.wr){if(wallHit(1,0,-p.vx))return true;p.x=BL+p.wr;}
+  else if(p.x>BR-p.wr){if(wallHit(-1,0,p.vx))return true;p.x=BR-p.wr;}
+  if(p.y<BT+p.wr){if(wallHit(0,1,-p.vy))return true;p.y=BT+p.wr;}
+  else if(p.y>BB-p.wr){if(wallHit(0,-1,p.vy))return true;p.y=BB-p.wr;}
   return false;
 }
 function wallHit(nx,ny,vn){                              // (nx,ny) points back into the room, vn is the speed into the wall
@@ -43,7 +44,7 @@ function wallHit(nx,ny,vn){                              // (nx,ny) points back 
     if(vn>3&&p.bonkT<=0){p.bonkT=20;sfx.dud();ringFx(p.x,p.y,COL.amber,6,46,16,3);if(++R.duds>1)say('Faster',120);}
   }
   if(nx)p.vx=-p.vx*MOVE.rebound;else p.vy=-p.vy*MOVE.rebound;
-  if(vn>2){sfx.wall(Math.min(1,vn/MOVE.cap));if(vn>9){shake=Math.max(shake,vn*.3);puff(p.x-nx*p.r,p.y-ny*p.r,COL.wall,5,3);}}
+  if(vn>2){sfx.wall(Math.min(1,vn/MOVE.cap));if(vn>9){shake=Math.max(shake,vn*.3);puff(p.x-nx*p.wr,p.y-ny*p.wr,COL.wall,5,3);}}
   return false;
 }
 
@@ -62,7 +63,7 @@ function gainDust(){
    The meter fills in 45 ticks while pinned and empties in 20 once free. Full = one heart. */
 function squeezeTick(){
   const p=P;if(p.superT>0||p.inv>0){p.squish=Math.max(0,p.squish-.05);return;}
-  const wall=p.x<=BL+p.r+1.5||p.x>=BR-p.r-1.5||p.y<=BT+p.r+1.5||p.y>=BB-p.r-1.5;
+  const wall=p.x<=BL+p.wr+1.5||p.x>=BR-p.wr-1.5||p.y<=BT+p.wr+1.5||p.y>=BB-p.wr-1.5;
   const pinned=p.tE>=2||(p.tE>=1&&(wall||p.tS>0));
   p.squish=pinned?Math.min(1,p.squish+1/45):Math.max(0,p.squish-1/20);
   if(p.squish>p.sqMax)p.sqMax=p.squish;
