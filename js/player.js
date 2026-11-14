@@ -15,7 +15,7 @@ function playerTick(){
   let ix=0,iy=0;
   if(k.has('ArrowLeft')||k.has('KeyA'))ix--;if(k.has('ArrowRight')||k.has('KeyD'))ix++;
   if(k.has('ArrowUp')||k.has('KeyW'))iy--;if(k.has('ArrowDown')||k.has('KeyS'))iy++;
-  if(ix||iy){const d=hyp(ix,iy);p.vx+=ix/d*drive;p.vy+=iy/d*drive;}
+  if((ix||iy)&&!inp.down){const d=hyp(ix,iy);p.vx+=ix/d*drive;p.vy+=iy/d*drive;}   // a drag wins over the keys: the two never add
   if(inp.down){const a=aimPoint(),dx=a.x-p.x,dy=a.y-p.y,d=hyp(dx,dy);
     if(d>2){const f=Math.min(d/MOVE.reach,1)*drive;p.vx+=dx/d*f;p.vy+=dy/d*f;}}
   const q=inp.down||ix||iy?MOVE.held:MOVE.released;p.vx*=q;p.vy*=q;
