@@ -4,19 +4,22 @@
    so a fast player never waits. b blob · z sleeper · s splitter · d dasher · h shield · p puffer ·
    B brute (digit = armour bands) · G the giant. '@x,y' drops one straight into the room. */
 const ROOMS=[
-  {name:'First pop',zoom:1,grow:16,max:2,sp:.6,waves:[[0,'z1@.5,.3'],[999,'z1@.24,.52 z1@.76,.52'],[999,'b1 b1'],[6,'b1 b1 b1']]},
-  {name:'They grow',zoom:.96,grow:6.5,max:6,sp:.8,waves:[[0,'b1 b1 b2'],[6,'b1 b2 b1'],[7,'b2 b1 b1'],[7,'b3 b1 b1']]},
-  {name:'Split',zoom:.93,grow:7,max:10,sp:.75,waves:[[0,'s2 b1 b1'],[7,'s2 s2 b1'],[8,'s3 b1 b2']]},
-  {name:'Rush',zoom:.9,grow:6,max:10,waves:[[0,'d1 b1 b1'],[6,'d1 b2 b1 b1'],[7,'d1 d1 b2 b1'],[7,'s2 b2 d1']]},
-  {name:'Stones',zoom:.87,grow:6,max:10,stones:[[.25,.24],[.5,.2],[.75,.24],[.2,.5],[.5,.5],[.8,.5],[.25,.76],[.5,.8],[.75,.76]],
-    waves:[[0,'b2 b1 b1 b2'],[6,'s2 b2 d1'],[7,'B2 b1'],[5,'b2 b1 b2 d1']]},
-  {name:'Puffers',zoom:.84,grow:5.5,max:10,waves:[[0,'p1 b2 b1 b1 b2'],[6,'p2 s2 b2 b2'],[7,'p2 d1 b1 b2 b2'],[7,'p1 b3 s2 d1 b2']]},
-  {name:'Shields',zoom:.81,grow:5.5,max:10,waves:[[0,'h1 b1 b1 b2'],[6,'h1 b2 b1 p1 b2'],[7,'h2 s2 b1 b2'],[7,'h1 b2 d1 b2']]},
-  {name:'Crowd',zoom:.78,grow:4.5,max:10,sp:1.25,stones:[[.3,.3],[.7,.3],[.5,.5],[.3,.7],[.7,.7]],
-    waves:[[0,'b2 b1 b2 s2 d1'],[5,'h1 b2 b2 p1 b1'],[6,'s3 d1 b3 b1 h2'],[6,'B2 b2 b1 s2 p2'],[6,'d1 d1 b3 b2 h1']]},
-  {name:'The walls',zoom:.75,grow:5,max:10,sp:1.2,shrink:[.25,58],
+  // 1-5: everything the old ten rooms taught, at twice the pace. The giant is the middle of the game now.
+  {name:'First pop',zoom:1,grow:8,max:3,sp:.7,waves:[[0,'z1@.5,.3'],[999,'z1@.24,.52 z1@.76,.52'],[999,'b1 b1'],[6,'b1 b2 b1'],[7,'b2 b1 b1']]},
+  {name:'Split and rush',zoom:.985,grow:6.5,max:10,sp:.85,waves:[[0,'s2 b1 b1'],[7,'d1 b1 b1'],[7,'s2 d1 b2'],[7,'d1 s2 b2 b1']]},
+  {name:'Spikes and shields',zoom:.97,grow:6,max:10,waves:[[0,'p1 b1 b1'],[6,'h1 b2 b1'],[7,'p2 h1 b2'],[7,'h1 p1 s2 d1']]},
+  {name:'The walls',zoom:.955,grow:5,max:10,sp:1.2,shrink:[.18,58],
     waves:[[0,'b2 b1 b1 s2 b2'],[5,'d1 b2 b2 h1 b2'],[5,'s2 b1 p1 b2 b2'],[5,'b3 d1 s2 b1 b2'],[5,'h2 b2 d1 b2']]},
-  {name:'The giant',zoom:.72,grow:5,max:10,sp:1.3,waves:[[0,'G7@.5,.28'],[8,'d1 h1 b2 b2'],[10,'p1 d1 b2 b2'],[10,'h2 d1 s2 b2'],[10,'d1 d1 b3 b2']]},
+  {name:'The giant',zoom:.94,grow:5,max:10,sp:1.2,waves:[[0,'G6@.5,.28'],[8,'d1 h1 b2 b2'],[10,'p1 d1 b2 b2'],[10,'h2 d1 s2 b2'],[10,'d1 d1 b3 b2']]},
+  // 6-10: new. A first draft, made from the pieces that already exist.
+  {name:'Stones',zoom:.92,grow:5.5,max:10,sp:1.1,stones:[[.25,.24],[.5,.2],[.75,.24],[.2,.5],[.5,.5],[.8,.5],[.25,.76],[.5,.8],[.75,.76]],
+    waves:[[0,'b2 b1 b1 b2'],[6,'s2 b2 d1 p1'],[7,'B2 b1 h1'],[5,'b2 b1 b2 d1 p1']]},
+  {name:'Crowd',zoom:.905,grow:4.5,max:10,sp:1.25,stones:[[.3,.3],[.7,.3],[.5,.5],[.3,.7],[.7,.7]],
+    waves:[[0,'b2 b1 b2 s2 d1'],[5,'h1 b2 b2 p1 b1'],[6,'s3 d1 b3 b1 h2'],[6,'B2 b2 b1 s2 p2'],[6,'d1 d1 b3 b2 h1']]},
+  {name:'Twins',zoom:.89,grow:5,max:10,sp:1.2,waves:[[0,'B2 B2 b1'],[6,'h1 h1 b2 d1'],[6,'B3 s2 p1 b2'],[6,'d1 d1 h2 b2 b1']]},
+  {name:'The vise',zoom:.875,grow:4.5,max:10,sp:1.25,shrink:[.2,45],
+    waves:[[0,'b2 b2 s2 d1 h1'],[5,'p1 b2 b2 d1 b1'],[5,'s3 h1 b2 p1 b2'],[5,'B2 d1 s2 b2 h1'],[5,'d1 d1 b3 h2 b2']]},
+  {name:'The giant returns',zoom:.86,grow:4.5,max:10,sp:1.3,waves:[[0,'G9@.5,.28'],[8,'B2 d1 h1 b2'],[9,'p1 d1 b2 h1'],[9,'h2 d1 s2 b2 B2'],[9,'d1 d1 b3 p2']]},
 ];
 /* Endless: opens once all ten are rung. The same rule, crowds made on the spot, and one set of hearts for the whole run.
    The score is walls rung. Everything that sets how hard wall n is sits in ENDLESS: edit it to rebalance. */
@@ -55,7 +58,8 @@ function startRoom(i,carry){
   if(carry)for(const q of PT.concat(DU,FL)){q.x+=ox;q.y+=oy;}else PT.length=DU.length=FL.length=0;
   P=newPlayer(W/2,H*.72);
   if(carry){P.x=prev.x+ox;P.y=prev.y+oy;P.vx=prev.vx;P.vy=prev.vy;P.over=30;P.heard=prev.heard;P.tr=prev.tr.map((v,k)=>v+(k&1?oy:ox));
-    if(mode==='endless')for(const k of['hearts','maxH','reach','dust','ready','chain','heal','inv','superT'])P[k]=prev[k];}   // Endless: nothing refills at the wall
+    if(mode==='endless')for(const k of['hearts','maxH','reach','dust','ready','chain','heal','inv','superT'])P[k]=prev[k];   // Endless: nothing refills at the wall
+    else for(const k of['hearts','heal'])P[k]=prev[k];}                                                               // the rooms: hearts carry through the wall. Only a retry refills them.
   else if(mode==='endless'){const k=perks();if(k.heart)P.hearts=P.maxH=4;if(k.sup){P.dust=SUPER_COST;P.ready=true;}if(k.dust)P.reach=240;}   // what the stars bought
   const hue=232+i*7;                                                    // each room drifts a little further from navy
   R={i,def,t:0,wi:0,wt:0,total:bodies(def),popped:0,best:0,hurt:false,cleared:false,duds:0,deadT:0,fin:0,intro:carry?120:36,c0,c1:s.c,ghost,res,

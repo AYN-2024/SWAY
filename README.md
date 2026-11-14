@@ -2,7 +2,7 @@
 
 Pop them all. Gong the wall.
 
-A one-thumb arcade game. You are a comet shut in ten rooms, one inside the next.
+A one-thumb arcade game. You are a comet shut in ten rooms, one inside the next. Add `?all` to the link to open every room, and `?slow=0.1` to watch it at a tenth of the speed.
 Clear a room, hit its wall at full speed, and it rings like a gong and lets you out.
 If you stop, you die.
 

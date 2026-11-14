@@ -25,7 +25,7 @@ function star(x,y,r,on){
 }
 
 function draw(){
-  const c=ctx;gt++;c.setTransform(DPR,0,0,DPR,0,0);c.fillStyle=COL.deep;c.fillRect(0,0,VW,VH);
+  const c=ctx;gt+=SLOWMO;c.setTransform(DPR,0,0,DPR,0,0);c.fillStyle=COL.deep;c.fillRect(0,0,VW,VH);
   if(state==='title'||!R){                                             // the title: the ten rooms, and where you are in them
     if(mapOn){const b=$('slot').getBoundingClientRect(),s=Math.min(b.width,b.height)*.96,d=doneCount(),cur=Math.min(d,9);
       if(s>70){const x=b.left+b.width/2,y=b.top+b.height/2,o=s*(cur+1.7)/10.7*.27,a=gt*.035;nest(x,y,s,d,cur,1);
@@ -137,6 +137,8 @@ function crown(r){                                                      // whoev
   c.closePath();c.fill();c.stroke();
 }
 
+/* Glowing, the comet is a bullet: a round nose and a body that narrows into the tail. len and tail are in body radii. Hit size is still the circle. */
+const BULLET={len:1.9,tail:.5};
 /* The squeeze picture. Edit to taste: grow = how much bigger at a full meter, throb = the pulse, drop = how far the shadow falls, shade = how dark it is.
    Only the body swells. The dust ring stays on the floor, inside the frame. */
 const BULGE={grow:.5,throb:.12,drop:16,shade:.6};
@@ -161,7 +163,11 @@ function drawComet(){
   const last=p.hearts===1&&!sup,beat=calm?.5:.5+.5*Math.sin(gt*.1);                                 // the last heart: the body's outline turns coral and beats
   if(q){c.globalAlpha=BULGE.shade*q;c.fillStyle='#000';c.beginPath();c.arc(0,BULGE.drop*q,(r+2)*b,0,TAU);c.fill();c.globalAlpha=al;   // its shadow falls further below as it rises
     c.scale(b,b);}
-  c.fillStyle=p.ready||sup?COL.green:COL.teal;c.strokeStyle=last?COL.coral:COL.line;c.lineWidth=last?3.5+1.5*beat:3;c.beginPath();c.arc(0,0,r,0,TAU);c.fill();c.stroke();c.strokeStyle=COL.line;
+  else if(p.sq>0){const k=p.sq/SQUASH.ticks,s=1-p.sqA*Math.sin(k*Math.PI*.5)*k;c.rotate(p.sqN);c.scale(s,1/s);c.rotate(-p.sqN);}   // flat against what it just hit, same volume
+  c.fillStyle=p.ready||sup?COL.green:COL.teal;c.strokeStyle=last?COL.coral:COL.line;c.lineWidth=last?3.5+1.5*beat:3;c.beginPath();
+  if(p.top&&!q&&v>1){c.save();c.rotate(Math.atan2(p.vy,p.vx));c.arc(0,0,r,-Math.PI/2,Math.PI/2);c.lineTo(-r*BULLET.len,r*BULLET.tail);c.lineTo(-r*BULLET.len,-r*BULLET.tail);c.closePath();c.restore();}
+  else c.arc(0,0,r,0,TAU);
+  c.fill();c.stroke();c.strokeStyle=COL.line;
   if(q){let g=c.createRadialGradient(0,0,r*.45,0,0,r);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,'+(.5*q)+')');   // the rim falls away
     c.fillStyle=g;c.beginPath();c.arc(0,0,r-1.5,0,TAU);c.fill();
     g=c.createRadialGradient(-r*.3,-r*.38,0,-r*.3,-r*.38,r*(.35+.5*q));g.addColorStop(0,'rgba(255,255,255,'+(.75*q)+')');g.addColorStop(1,'rgba(255,255,255,0)');   // the shine of a dome

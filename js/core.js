@@ -18,6 +18,7 @@ const rr=(a,b)=>a+rnd()*(b-a);
 const $=id=>document.getElementById(id);
 const cv=$('cv'),ctx=cv.getContext('2d');
 const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SLOWMO=(m=>m?clamp(+m[1]||1,.02,1):1)(/[?&]slow=([\d.]+)/.exec(location.search));   // ?slow=0.1 plays at a tenth of the speed, to look at an effect
 
 let VW=0,VH=0,DPR=1,S0=1,cam=1,OX=0,OY=0;    // viewport, base scale, camera (px per unit), draw origin
 let W=390,H=740,BL=0,BT=0,BR=390,BB=740;     // room size and live wall positions, world units

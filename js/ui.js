@@ -64,7 +64,7 @@ function frame(t){
     acc+=dt;let n=0;
     while(acc>=TICK&&n<4){acc-=TICK;n++;
       if(slowT>0&&--slowT===0)slow=1;
-      sacc+=slow;while(sacc>=1&&(state==='play'||state==='end')){sacc--;update();}}
+      sacc+=slow*SLOWMO;while(sacc>=1&&(state==='play'||state==='end')){sacc--;update();}}
     if(n===4)acc=0;
   }
   audioFrame();draw();
