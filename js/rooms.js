@@ -62,6 +62,7 @@ function startRoom(i,carry){
     ink:'hsl('+hue+',33%,13.5%)',grid:'hsl('+hue+',38%,21%)',wall:'hsl('+hue+',32%,41%)'};
   for(const q of def.stones||[])ST.push({x:q[0]*W,y:q[1]*H,r:25});
   cam=c0;hint.t=0;if(i===0&&!save.hints.drag)say('Drag',1e6);
+  if(i===1&&mode==='rooms'&&!save.hints.wall){save.hints.wall=1;store();say('Bounce off walls to turn',300);}   // a glowing comet turns too wide for the room: the walls are the turn
   hud();
 }
 
