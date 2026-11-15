@@ -138,6 +138,7 @@ function pop(e){
 /* A touch that is not a pop: the body throws you back and the chain ends. It costs no heart.
    One throw, then a short gap (SHOVE.gap ticks) where a touch only stops you, so being pinned still works as before. */
 const SHOVE={base:8,perRing:.8,rings:4,gap:40};
+const SLOW_SAY=3;   // this many throw-backs in a row with no pop or peel between them, and the comet is told "Faster": the same word the gold wall uses for too slow
 const SPIKE={push:1.5,dark:60,after:90};   // a spike touch costs a heart unless you are blinking. push = the little speed you keep, dark = ticks with no glow, after = the most ticks the spikes stay out once they have taken a heart (the blink is 110)
 function bumpInto(e,nx,ny,o){
   const p=P,vn=p.vx*nx+p.vy*ny,en=e.vx*nx+e.vy*ny;p.x+=nx*o;p.y+=ny*o;
@@ -148,6 +149,7 @@ function bumpInto(e,nx,ny,o){
   if(e.iv>0){if(vn<0){p.vx-=1.7*vn*nx;p.vy-=1.7*vn*ny;}return;}                   // just struck: solid for a moment, no penalty
   if(e.type!=='z'&&p.shoveT<=0){                                                  // thrown back; bigger bodies throw harder; sleepers never do
     const k=SHOVE.base+Math.min(e.n,SHOVE.rings)*SHOVE.perRing;p.vx=nx*k+e.vx;p.vy=ny*k+e.vy;p.shoved=18;p.shoveT=SHOVE.gap;p.bonkT=14;e.pulse=1;endChain();
+    if(!p.top&&++p.slowN>=SLOW_SAY){p.slowN=0;word(p.x,p.y-p.r-22,'Faster',COL.paper,20,60);}   // too slow, again and again: say it once, where "Spiked" is said
     shake=Math.max(shake,9);buzz(12);if(e.type==='h'&&p.top)sfx.clang();else sfx.bonk();puff(p.x-nx*p.r,p.y-ny*p.r,TY[e.type].col,8,5);return;}
   if(vn<0){p.vx-=1.55*vn*nx;p.vy-=1.55*vn*ny;p.vx*=.3;p.vy*=.3;}
   const v2=p.vx*nx+p.vy*ny;if(v2<en){p.vx+=(en-v2)*nx;p.vy+=(en-v2)*ny;}          // a body that keeps coming carries the comet with it

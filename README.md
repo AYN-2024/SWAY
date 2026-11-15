@@ -27,7 +27,7 @@ Stars buy perks that only work in Endless: 10 stars start you with Super ready, 
 
 Keyboard: arrows or WASD to fly, Space for Super, P to pause, R to restart the room.
 Add `?all` to the address to open every room and Endless.
-Add `?stats` to see, on the Rooms screen, the counts kept on this phone: days opened, tries and deaths in each room, Endless runs. Nothing is sent.
+Add `?stats` to see, on the Rooms screen, the counts kept on this phone: days played, tries and deaths in each room, Endless runs. Nothing is sent.
 
 ## Files
 

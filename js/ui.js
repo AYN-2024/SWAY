@@ -55,7 +55,7 @@ function openRooms(){
   const st=stars(),nx=PERKS.find(p=>st<p[0]);                              // what the next stars buy
   $('perkNote').textContent=st+' of 30 stars. '+perksOn()+(nx?(nx[0]-st)+' more: '+nx[1]+'.':'')+(endlessOpen()?'':' Endless opens after room 10.');   // the perks pay in Endless: say when it opens, while it is shut
   const q=save.st,row=a=>ROOMS.map((_,i)=>a[i]||0).join(' '),sn=$('statNote');sn.hidden=!/[?&]stats\b/.test(location.search);   // the counts kept on this phone, only on a ?stats link
-  sn.textContent='Opened on '+q.n+(q.n===1?' day':' days')+(q.n>1?', '+q.d0+' to '+q.d1:q.d0?', '+q.d0:'')+'.\nTries: '+row(q.t)+'\nDeaths: '+row(q.x)+'\nEndless runs: '+q.e;                                  // four short lines; tries and deaths are rooms 1 to 10, in order
+  sn.textContent='Played on '+q.n+(q.n===1?' day':' days')+(q.n>1?', '+q.d0+' to '+q.d1:q.d0?', '+q.d0:'')+'.\nTries: '+row(q.t)+'\nDeaths: '+row(q.x)+'\nEndless runs: '+q.e;                                  // four short lines; tries and deaths are rooms 1 to 10, in order
   state='title';show('rooms');
 }
 function showEnd(){
@@ -112,7 +112,7 @@ addEventListener('keydown',e=>{
 });
 addEventListener('keyup',e=>inp.keys.delete(e.code));
 addEventListener('blur',()=>{inp.keys.clear();inp.down=false;});
-document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();else dayNow();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
 addEventListener('contextmenu',e=>e.preventDefault());
 
 function onResize(){
