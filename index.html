@@ -50,6 +50,8 @@ p{margin:0;line-height:1.45}
 .note{color:var(--muted);font-size:15px;font-weight:600;max-width:30ch}
 .btn{--sh:#1b8f7f;appearance:none;width:100%;min-height:60px;border-radius:18px;border:3px solid var(--line);background:var(--teal);color:var(--line);font:900 21px/1 var(--font);cursor:pointer;box-shadow:0 6px 0 var(--sh);transition:transform .06s,box-shadow .06s}
 .btn:active{transform:translateY(5px);box-shadow:0 1px 0 var(--sh)}
+.btn:disabled{opacity:.32;box-shadow:none;cursor:default}
+.btn:disabled:active{transform:none}
 .btn.gold{--sh:#ad8720;background:var(--amber)}
 .btn.quiet{--sh:#2a2f5a;min-height:52px;background:var(--ink);color:var(--paper);border-color:var(--wall);font-size:17px;font-weight:800}
 .btn:focus-visible,.tile:focus-visible,#pauseBtn:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
@@ -64,6 +66,7 @@ p{margin:0;line-height:1.45}
 .tile i.on{background:var(--amber)}
 .tile:disabled{opacity:.32;cursor:default}
 .tile:not(:disabled):active{transform:scale(.94)}
+#statNote{white-space:pre-line;font-variant-numeric:tabular-nums}
 @media (max-height:520px){#logo{width:min(46vw,300px)}.scr{gap:9px}.btn{min-height:50px}h1{font-size:34px}}
 </style>
 </head>
@@ -103,6 +106,7 @@ p{margin:0;line-height:1.45}
     <p class="note">One star for getting out. One for no lost hearts. One for a long chain.</p>
     <div id="grid"></div>
     <p id="perkNote" class="note"></p>
+    <p id="statNote" class="note" hidden></p>
     <button id="back" class="btn quiet">Back</button>
   </section>
 

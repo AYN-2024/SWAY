@@ -215,7 +215,7 @@ function drawOver(){
   if(hint.t>0&&hint.s&&!(r.res&&r.intro>0))label(hint.s,cx,fr.y+Math.max(fr.h*.2,fr.h*.09+70),24,COL.paper,Math.min(1,hint.t/20));   // near the top, away from the thumb and clear of the room name. It waits while the stars card is up
   if(r.res&&r.res.e&&r.intro>0){const n=120-r.intro,a=Math.min(1,n/10,r.intro/14),y=fr.y+fr.h*.26;                     // Endless: how many walls so far
     label(''+r.res.n,cx,y,84,COL.amber,a,900);label(r.res.n===1?'wall rung':'walls rung',cx,y+62,18,COL.paper,a);
-    if(r.res.n>EB0&&EB0>0)label('New best',cx,y+90,15,COL.muted,a,700);}
+    if(EB0>0)label(r.res.n>EB0?'New best':'best '+EB0,cx,y+90,15,COL.muted,a,700);}                                  // the best to beat stays on the card until it is beaten
   else if(r.res&&r.intro>0){const n=120-r.intro,a=Math.min(1,n/10,r.intro/14),y=fr.y+fr.h*.28,q=r.res;                  // the room you just rang
     nest(cx,y,96,q.i+1,q.i+1,a);c.globalAlpha=a;
     const cap=['out','no hit','chain '+Math.ceil(q.total*.75)+'+'];

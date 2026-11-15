@@ -45,6 +45,11 @@ let save={rooms:[],hints:{},mute:false,endless:{best:0}};
 try{const s=JSON.parse(localStorage.getItem('gong.v1'));if(s&&Array.isArray(s.rooms))save=Object.assign(save,s);}catch(e){}
 function store(){try{localStorage.setItem('gong.v1',JSON.stringify(save));}catch(e){}}
 if(!save.endless||typeof save.endless.best!=='number')save.endless={best:0};
+/* Counts kept on this phone only. Nothing is sent, and nothing shows in play: one line on the Rooms screen, only on a ?stats link.
+   n = days the game was opened (d0 the first, d1 the last), t = tries in each room, x = deaths in each room, e = Endless runs. */
+if(!save.st||!Array.isArray(save.st.t)||!Array.isArray(save.st.x))save.st={n:0,d0:'',d1:'',t:[],x:[],e:0};
+function dayNow(){const d=new Date(),day=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),s=save.st;if(s.d1!==day){s.n++;if(!s.d0)s.d0=day;s.d1=day;store();}}
+dayNow();
 /* Stars buy perks, and the perks only work in Endless: 10 = Super ready at the start, 20 = a fourth heart, 30 = dust from twice as far. */
 const PERKS=[[10,'start Endless with Super ready','Super ready at the start'],[20,'a fourth heart in Endless','a fourth heart'],[30,'dust comes from twice as far in Endless','dust from twice as far']];
 const perksOn=()=>{const n=stars(),on=PERKS.filter(p=>n>=p[0]).map(p=>p[2]);return on.length?'On in Endless: '+on.join(', ')+'. ':'';};   // the perks already won, in words

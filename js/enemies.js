@@ -127,7 +127,7 @@ function pop(e){
   const p=P,i=E.indexOf(e);if(i<0)return;E.splice(i,1);
   const T=TY[e.type],big=e.n>2;R.popped++;chainUp();p.over=30;                    // a pop never slows you: it gives you a kick
   freeze=Math.max(freeze,big?4:2);shake=Math.max(shake,5+e.n*2.4);buzz(big?16:8);sfx.pop(p.chain,big);
-  puff(e.x,e.y,T.col,10+e.n*5,4+e.n);ringFx(e.x,e.y,T.col,e.r*.6,e.r*1.8,18,5);dustAt(e.x,e.y,3+e.n*2+(e.type==='d'||e.type==='p'||e.type==='h'?KIND_DUST:0));
+  puff(e.x,e.y,T.col,10+e.n*5,4+e.n);ringFx(e.x,e.y,T.col,e.r*.6,e.r*1.8,18,5);if(R.i>0)dustAt(e.x,e.y,3+e.n*2+(e.type==='d'||e.type==='p'||e.type==='h'?KIND_DUST:0));
   if(e.type==='s'){const v=hyp(p.vx,p.vy)||1,sx=-p.vy/v,sy=p.vx/v;               // two smaller ones fly out sideways
     for(const s of[-1,1]){const c=mkEnemy('b',e.x+sx*s*e.r*.5,e.y+sy*s*e.r*.5,Math.max(1,e.n-1));
       c.st=1;c.vx=sx*s*7;c.vy=sy*s*7;c.stun=26;c.iv=10;E.push(c);}}

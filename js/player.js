@@ -79,7 +79,7 @@ function hurt(by){
   for(const e of E){const dx=e.x-p.x,dy=e.y-p.y,d=hyp(dx,dy)||1;
     if(d<e.r+p.r+8)e.crown=tick;                         // the ones that did it get a crown if this was the last heart
     if(d<280+e.r){const k=(1-Math.max(0,d-e.r)/280)*10;e.vx+=dx/d*k;e.vy+=dy/d*k;e.stun=70;}}
-  if(p.hearts<=0){p.dead=true;R.deadT=70;slow=.25;slowT=70;sfx.dead();puff(p.x,p.y,COL.teal,40,9);ringFx(p.x,p.y,COL.paper,10,160,36,5);}
+  if(p.hearts<=0){p.dead=true;if(mode==='rooms'){save.st.x[R.i]=(save.st.x[R.i]||0)+1;store();}R.deadT=70;slow=.25;slowT=70;sfx.dead();puff(p.x,p.y,COL.teal,40,9);ringFx(p.x,p.y,COL.paper,10,160,36,5);}
   hud();
 }
 

@@ -65,6 +65,7 @@ function startRoom(i,carry){
   R={i,def,t:0,wi:0,wt:0,total:bodies(def),popped:0,best:0,hurt:false,cleared:false,duds:0,deadT:0,fin:0,intro:carry?120:36,c0,c1:s.c,ghost,res,
     ink:'hsl('+hue+',33%,13.5%)',grid:'hsl('+hue+',38%,21%)',wall:'hsl('+hue+',32%,41%)'};
   for(const q of def.stones||[])ST.push({x:q[0]*W,y:q[1]*H,r:25});
+  if(mode==='rooms'){save.st.t[i]=(save.st.t[i]||0)+1;store();}          // one more try at this room, whether it began from a button or through the wall
   cam=c0;hint.t=0;if(i===0&&!save.hints.drag)say('Drag',1e6);
   hud();
 }
