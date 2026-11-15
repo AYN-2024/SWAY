@@ -3,7 +3,7 @@
 function newPlayer(x,y){
   return{x,y,vx:0,vy:0,r:MOVE.r,tr:[],top:false,over:0,hearts:3,squish:0,pnx:0,pny:-1,inv:0,dust:0,ready:false,
     chain:0,rest:0,shoved:0,heal:0,bonkT:0,tE:0,tS:0,sqMax:0,dead:false,moved:0,maxH:3,reach:120,shoveT:0,
-    wr:MOVE.r,spikeT:0};     // walls stop the body. The dust ring and the glow are cut off at the wall line when they are drawn.
+    wr:MOVE.r,spikeT:0,noT:0};     // walls stop the body. The dust ring and the glow are cut off at the wall line when they are drawn.
 }
 /* On touch the aim sits above the thumb, never under it. */
 function aimPoint(){const lift=inp.touch?Math.min(92,VH*.13):0;return{x:(inp.sx-OX)/cam,y:(inp.sy-lift-OY)/cam};}
@@ -59,7 +59,7 @@ function chainUp(){
 function gainDust(){
   const p=P;if(R.i<1||p.dust>=SUPER_COST)return;   // room 1 has no Super yet
   p.dust++;sfx.dust(p.dust);
-  if(p.dust>=SUPER_COST){p.ready=true;sfx.ready();ringFx(p.x,p.y,COL.green,10,70,24,4);if(!save.hints.sup)say('Double-tap',600);}
+  if(p.dust>=SUPER_COST){p.ready=true;sfx.ready();ringFx(p.x,p.y,COL.green,10,70,24,4);if(!save.hints.sup)say(SUP_HINT,600);}
 }
 
 /* The squeeze, as in the original: pinned = touching two bodies, or one body and something solid.
@@ -85,10 +85,11 @@ function hurt(by){
 
 /* Super: one blast that clears the space around you, and half a second where nothing can squeeze you. Nothing after that.
    Green means ready, and only that. */
+const SUP_HINT='Super ready. Double-tap',NOT_READY=16;   // the blast is named where it is taught; NOT_READY = ticks the ring stays white after a double-tap that came too early
 function fireSuper(){
-  const p=P;if(!p.ready){if(R.i>0&&p.dust>0)sfx.ui();return;}
+  const p=P;if(!p.ready){if(R.i>0&&p.dust>0){sfx.ui();p.noT=tick+NOT_READY;}return;}   // not ready: the dust ring flashes white once. It is the ring that is not full
   p.ready=false;p.dust=0;p.inv=Math.max(p.inv,30);p.squish=p.sqMax=0;p.shoved=0;slow=.4;slowT=16;shake=18;buzz(30);sfx.boom();
-  save.hints.sup=1;store();if(hint.s==='Double-tap')hint.t=0;
+  save.hints.sup=1;store();if(hint.s===SUP_HINT)hint.t=0;
   ringFx(p.x,p.y,COL.green,20,230,30,9);
   for(const e of E.slice()){const dx=e.x-p.x,dy=e.y-p.y,d=hyp(dx,dy)||1;
     if(d<190+e.r)strike(e,-dx/d,-dy/d,true);

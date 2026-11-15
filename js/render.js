@@ -171,7 +171,7 @@ function drawComet(){
   if(p.top){const hr=r+18+Math.sin(gt*.4)*2,hc=a=>'hsla('+(gt*9%360)+',95%,70%,'+a+')',g=c.createRadialGradient(0,0,r*.7,0,0,hr);   // the glow: bright at the body, gone at the edge
     g.addColorStop(0,hc(.6));g.addColorStop(1,hc(0));c.globalAlpha=al;c.fillStyle=g;c.beginPath();c.arc(0,0,hr,0,TAU);c.fill();}
   c.globalAlpha=al;
-  if(R.i>0&&p.dust>0){c.strokeStyle=p.ready?COL.green:COL.amber;c.lineWidth=p.ready?5+Math.sin(gt*.3)*1.5:4;      // the only ring: dust, filling toward Super
+  if(R.i>0&&p.dust>0){const no=!p.ready&&tick<p.noT;c.strokeStyle=p.ready?COL.green:no?COL.paper:COL.amber;c.lineWidth=p.ready?5+Math.sin(gt*.3)*1.5:no?7:4;      // the only ring: dust, filling toward Super
     c.beginPath();c.arc(0,0,r+7,-Math.PI/2,-Math.PI/2+TAU*p.dust/SUPER_COST);c.stroke();}
   c.restore();c.globalAlpha=al;
   const last=p.hearts===1,beat=calm?.5:.5+.5*Math.sin(gt*.1);                                 // the last heart: the body's outline turns coral and beats

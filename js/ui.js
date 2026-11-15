@@ -7,7 +7,7 @@ function show(id){
   $('ov').hidden=!id;mapOn=id==='title';$('ov').classList.toggle('clear',mapOn);$('ov').classList.toggle('soft',id==='end');$('hud').hidden=state==='title'||state==='end';
   if(id==='title'){const d=doneCount(),b=save.endless.best;$('play').textContent=!d?'Play':d>=ROOMS.length?'Play again':'Play room '+(d+1);
     $('endlessBtn').hidden=!endlessOpen();$('endlessBtn').textContent=b?'Endless  ·  best '+b:'Endless';
-    const st=stars();$('roomsBtn').textContent=st?'Rooms  ·  '+st+' of 30 stars':'Rooms';}                    // the stars still to win, on the first screen
+    const st=stars();$('roomsBtn').textContent=st?'Rooms  ·  '+st+' of 30 stars':'Rooms';$('mute0').textContent=muteWord();}                    // the stars still to win, on the first screen
   if(id==='dead'){const e=mode==='endless',n=$('deadStats'),sp=P&&P.by==='spike',b=Math.max(R.best,P.chain),old=e?0:bestChain(R.i,b);n.hidden=false;
     $('deadTitle').textContent=sp?'Spiked':'Squished';$('deadTag').textContent=sp?'Leave it alone while it is spiky.':'If you stop, you die.';
     n.textContent=e?'You rang '+EW+(EW===1?' wall. ':' walls. ')+(EW>EB0?'New best.':'Best '+save.endless.best+'.')
@@ -29,11 +29,20 @@ function start(i){
 }
 function pause(){
   if(state!=='play'||R.fin)return;state='pause';inp.down=false;inp.keys.clear();
-  $('mute').textContent=save.mute?'Sound off':'Sound on';$('restart').textContent=mode==='endless'?'Restart run':'Restart room';
+  $('mute').textContent=muteWord();ask='';askWords();
   const ps=$('pauseStars');ps.hidden=mode==='endless';                                  // where this room's stars stand: the heart star and the chain star
   ps.textContent=(R.hurt?'A heart was lost in this room. ':'No heart lost in this room. ')+'Best chain '+Math.max(R.best,P.chain)+'. The star needs '+Math.ceil(R.total*.75)+'.';
   show('pause');
 }
+const muteWord=()=>save.mute?'Sound off':'Sound on';
+/* Endless, paused: Restart run and Rooms end the run, so the first tap only asks. The second tap on the same button does it.
+   Keep going, the Sound button or pausing again puts the buttons back. In the rooms one tap is enough: a room is under a minute. */
+let ask='';
+function askWords(){
+  $('restart').textContent=ask==='restart'?'End this run? Tap again':mode==='endless'?'Restart run':'Restart room';
+  $('quit').textContent=ask==='quit'?'End this run? Tap again':'Rooms';
+}
+function sure(id){if(mode!=='endless'||state!=='pause'||ask===id){ask='';return true;}ask=id;askWords();return false;}
 function resume(){if(state!=='pause')return;state='play';show('');}
 function openRooms(){
   const g=$('grid'),open=/[?&]all\b/.test(location.search)?ROOMS.length:Math.min(ROOMS.length,doneCount()+1);g.textContent='';
@@ -114,12 +123,14 @@ function onResize(){
 }
 
 $('play').onclick=()=>{const d=doneCount();begin(d>=ROOMS.length?0:d);};
-$('roomsBtn').onclick=$('quit').onclick=$('deadRooms').onclick=$('endRooms').onclick=openRooms;
+$('roomsBtn').onclick=$('deadRooms').onclick=$('endRooms').onclick=openRooms;
+$('quit').onclick=()=>{if(sure('quit'))openRooms();};
 $('back').onclick=()=>{state='title';show('title');};
 $('pauseBtn').onclick=pause;$('resume').onclick=resume;
-$('restart').onclick=$('retry').onclick=replay;
+$('retry').onclick=replay;
+$('restart').onclick=()=>{if(sure('restart'))replay();};
 $('endlessBtn').onclick=$('endEndless').onclick=beginEndless;
 $('again').onclick=()=>begin(0);
-$('mute').onclick=()=>{setMute(!save.mute);$('mute').textContent=save.mute?'Sound off':'Sound on';};
+$('mute').onclick=$('mute0').onclick=()=>{setMute(!save.mute);$('mute').textContent=$('mute0').textContent=muteWord();ask='';askWords();};
 
 layout();makeVignette();addEventListener('resize',onResize);show('title');requestAnimationFrame(frame);
